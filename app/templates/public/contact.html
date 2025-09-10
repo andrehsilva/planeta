@@ -1,0 +1,184 @@
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
+
+{% block title %}Contato e Orçamento - Planeta Imaginário{% endblock %}
+
+{% block public_content %}
+<section class="py-12 md:py-20 bg-gradient-to-br from-indigo-50 via-white to-orange-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                
+                <!-- Painel lateral com informações de contato -->
+                <div class="relative p-8 md:p-10 bg-gradient-to-br from-orange-500 to-red-500 text-white flex flex-col justify-center">
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <circle cx="30" cy="30" r="20" fill="white" />
+                            <circle cx="70" cy="70" r="25" fill="white" />
+                            <circle cx="50" cy="20" r="15" fill="white" />
+                        </svg>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        
+                        <h2 class="text-2xl md:text-3xl font-bold mb-4 text-center">Fale conosco</h2>
+                        
+                        <p class="text-orange-100 text-center mb-8 max-w-md mx-auto">
+                            Pronto para criar momentos mágicos? Preencha o formulário e nossa equipe entrará em contato para planejar a diversão!
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4 p-3 bg-orange-600 bg-opacity-30 rounded-lg">
+                                <div class="flex-shrink-0 bg-orange-700 p-2 rounded-full">
+                                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zM12 20.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.23.86 5.82 2.45s2.45 3.62 2.45 5.82c0 4.54-3.7 8.24-8.24 8.24zm4.52-6.2c-.25-.12-1.47-.72-1.7-.84-.23-.12-.39-.18-.56.12-.17.3-.64.84-.79 1.01-.15.17-.29.18-.54.06-.25-.12-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72s-.02-.39.11-.51c.11-.11.25-.29.37-.43.13-.14.17-.23.25-.39.08-.16.04-.29-.02-.41s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.42h-.48c-.17 0-.43.06-.66.3-.23.24-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.76 2.67 4.27 3.77 2.51 1.1 2.51.74 2.96.71.45-.03 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.18-.48-.3z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-orange-200">WhatsApp</p>
+                                    <a href="https://wa.me/5519999999999" target="_blank" class="font-semibold text-base hover:text-white transition-colors duration-200 block">(19) 99999-9999</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 p-3 bg-orange-600 bg-opacity-30 rounded-lg">
+                                <div class="flex-shrink-0 bg-orange-700 p-2 rounded-full">
+                                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-orange-200">E-mail</p>
+                                    <a href="mailto:contato@planetaimaginario.com.br" class="font-semibold text-base hover:text-white transition-colors duration-200 block">contato@planetaimaginario.com.br</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+
+                <!-- Formulário -->
+                <div class="p-6 md:p-8 lg:p-10">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="mb-4 px-4 py-3 rounded-lg flex items-center bg-green-100 text-green-800 border border-green-200">
+                                    <svg class="h-5 w-5 mr-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium">{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('main.contact') }}" class="space-y-4">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                {{ form.parent_name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                                <div class="relative">
+                                    {{ form.parent_name(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Seu nome completo") }}
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                {% for error in form.parent_name.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                            </div>
+
+                            <div>
+                                {{ form.whatsapp.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                                <div class="relative">
+                                    {{ form.whatsapp(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="(XX) XXXXX-XXXX") }}
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                {% for error in form.whatsapp.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            {{ form.email.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                            <div class="relative">
+                                {{ form.email(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="exemplo@email.com") }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% for error in form.email.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        </div>
+
+                        <div>
+                            {{ form.service_of_interest.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                            <div class="relative">
+                                {{ form.service_of_interest(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500") }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% for error in form.service_of_interest.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                {{ form.child_name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                                <div class="relative">
+                                    {{ form.child_name(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Nome da criança (opcional)") }}
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        
+                                    </div>
+                                </div>
+                                {% for error in form.child_name.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                            </div>
+                            <div>
+                                {{ form.child_age.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                                <div class="relative">
+                                    {{ form.child_age(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Idade (opcional)") }}
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        
+                                    </div>
+                                </div>
+                                {% for error in form.child_age.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            {{ form.message.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                            <div class="relative">
+                                {{ form.message(class="w-full border border-gray-300 rounded-lg py-2.5 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", rows=4, placeholder="Conte-nos mais sobre o que você precisa...") }}
+                                <div class="absolute top-3 left-3">
+                                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% for error in form.message.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        </div>
+
+                        <div>
+                            {{ form.submit(class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 cursor-pointer") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

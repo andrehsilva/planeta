@@ -1,0 +1,127 @@
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
+
+{% block title %}{{ post.title }} - Planeta Imaginário{% endblock %}
+{% block meta_description %}{{ post.meta_description }}{% endblock %}
+
+{% block public_content %}
+<article 
+    x-data="galleryModal()" 
+    class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-4xl">
+    
+    <header class="mb-8 text-center">
+        <div class="mb-4">
+            {% for cat in post.categories %}
+            <span class="inline-block bg-indigo-100 text-indigo-800 text-sm font-semibold mr-2 px-3 py-1 rounded-full">{{ cat.name }}</span>
+            {% endfor %}
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">{{ post.title }}</h1>
+        <div class="mt-6 flex justify-center items-center space-x-4 text-sm text-gray-500">
+            <span>Por {{ post.author.username }}</span>
+            <span class="text-gray-300">|</span>
+            <time datetime="{{ post.created_at.strftime('%Y-%m-%d') }}">{{ post.created_at.strftime('%d de %b de %Y') }}</time>
+        </div>
+    </header>
+
+    {% if post.cover_image and post.cover_image != 'default.jpg' %}
+    <figure class="mb-8">
+        <img class="w-full h-auto rounded-2xl shadow-lg object-cover" style="max-height: 500px;" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+    </figure>
+    {% endif %}
+
+    <div class="prose prose-lg max-w-none">
+        {{ post.content | safe }}
+    </div>
+
+    {% if post.gallery_images %}
+    <section class="mt-12 border-t pt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Galeria de Imagens</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {% for image in post.gallery_images %}
+            <button 
+                type="button" 
+                @click="openModal({{ loop.index0 }})" 
+                class="block w-full h-48 focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50 rounded-lg overflow-hidden">
+                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" 
+                     alt="{{ image.caption or 'Imagem da galeria' }}" 
+                     class="w-full h-full object-cover rounded-lg shadow-md hover:shadow-xl hover:opacity-80 transition-all duration-300">
+            </button>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Modal -->
+    <div x-show="isOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm">
+        <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <img :src="currentImageUrl" alt="Visualização da imagem" class="w-auto h-auto max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl">
+            
+            <button @click="closeModal" class="absolute -top-12 -right-4 md:-top-4 md:-right-12 h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <button @click="prevImage" x-show="currentIndex > 0" class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        
+        <button @click="nextImage" x-show="currentIndex < images.length - 1" class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+</article>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('galleryModal', () => {
+        return {
+            isOpen: false,
+            currentIndex: 0,
+            images: [
+                {% for image in post.gallery_images %}
+                '{{ url_for('static', filename='uploads/' + image.filename) }}',
+                {% endfor %}
+            ],
+            
+            openModal(index) {
+                this.currentIndex = index;
+                this.isOpen = true;
+                document.body.style.overflow = 'hidden';
+            },
+            
+            closeModal() {
+                this.isOpen = false;
+                document.body.style.overflow = 'auto';
+            },
+            
+            nextImage() {
+                if (this.currentIndex < this.images.length - 1) {
+                    this.currentIndex++;
+                }
+            },
+            
+            prevImage() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                }
+            },
+            
+            get currentImageUrl() {
+                return this.images[this.currentIndex];
+            }
+        }
+    });
+});
+</script>
+
+<style>
+[x-cloak] { display: none !important; }
+</style>
+{% endblock %}

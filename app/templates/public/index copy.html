@@ -1,0 +1,411 @@
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
+{% block public_content %}
+
+<!-- Hero Section Imersivo -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-orange-900">
+  <div class="absolute inset-0 z-0 opacity-20">
+    <div class="absolute top-0 left-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute top-0 right-0 w-72 h-72 bg-orange-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-indigo-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <div class="max-w-5xl mx-auto">
+      <!-- Logo e Localização -->
+      <div class="flex flex-col items-center justify-center mb-12">
+        <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20">
+          <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span class="text-white font-medium">Planeta Imaginário - Jundiaí Shopping - Piso G3, Loja S113</span>
+        </div>
+      </div>
+      
+      <!-- Headline Principal -->
+      <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight whitespace-nowrap">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400">Diversão</span> além da imaginação
+      </h1>
+      <p class="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed mb-10">
+        Festas de aniversário temáticas e passaportes de diversão em um universo onde a imaginação não tem limites.
+      </p>
+      
+      <!-- CTAs Principais -->
+      <div class="flex flex-col sm:flex-row gap-5 justify-center items-center mb-16">
+        <a href="#festas" class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-full shadow-2xl hover:shadow-orange-500/30 hover:scale-105 transform transition-all duration-300 overflow-hidden">
+          <span class="relative z-10 flex items-center">
+            <span class="mr-3">🎂</span>
+            Quero fazer minha festa
+            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
+        
+        <a href="#passaporte" class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-2xl hover:shadow-blue-500/30 hover:scale-105 transform transition-all duration-300 overflow-hidden">
+          <span class="relative z-10 flex items-center">
+            <span class="mr-3">🪪</span>
+            Conhecer o passaporte
+            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
+      </div>
+      
+      <!-- Elemento de Destaque -->
+      <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-md mx-auto">
+        <div class="flex items-center justify-center space-x-2 text-white/90">
+          <svg class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span class="text-sm font-medium">Espaço seguro e monitorado por profissionais especializados</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+    <div class="animate-bounce">
+      <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Nossos Serviços -->
+<section class="py-20 bg-white" id="servicos">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">O que oferecemos</span>
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">Experiências inesquecíveis</h2>
+      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">Criamos momentos mágicos que ficarão para sempre na memória das crianças e das famílias</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      <!-- Festas -->
+      <div id="festas" class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+        <div class="w-20 h-20 mb-6 bg-orange-100 rounded-2xl flex items-center justify-center">
+          <span class="text-4xl">🎂</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Festas de aniversário</h3>
+        <p class="text-gray-600 mb-6">Celebre de forma única e personalizada com nossas festas temáticas que transformam sonhos em realidade.</p>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Temas exclusivos e personalizados</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Decoração temática completa</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Recreação especializada</span>
+          </li>
+        </ul>
+        <a href="{{ url_for('main.contact') }}?service=Festas" class="inline-flex items-center font-semibold text-orange-600 hover:text-orange-700 group">
+          Solicitar orçamento
+          <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+      
+      <!-- Passaporte -->
+      <div id="passaporte" class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+        <div class="w-20 h-20 mb-6 bg-blue-100 rounded-2xl flex items-center justify-center">
+          <span class="text-4xl">🪪</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Passaporte de diversão</h3>
+        <p class="text-gray-600 mb-6">Deixe as crianças se divertirem em um ambiente seguro enquanto você aproveita o shopping com tranquilidade.</p>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Monitoramento por câmeras</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Equipe especializada em recreação</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Ambiente lúdico e seguro</span>
+          </li>
+        </ul>
+        <a href="{{ url_for('main.contact') }}?service=Passaporte" class="inline-flex items-center font-semibold text-blue-600 hover:text-blue-700 group">
+          Saiba mais
+          <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Diferenciais -->
+<section class="py-20 bg-gradient-to-br from-indigo-50 to-orange-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">Por que nos escolher</span>
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">Missão, visão e valores</h2>
+      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">Nosso compromisso é criar experiências que vão além da diversão</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-orange-400">
+        <div class="w-20 h-20 mx-auto mb-6 bg-orange-100 rounded-full flex items-center justify-center">
+          <span class="text-3xl">✨</span>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Missão</h3>
+        <p class="text-gray-600">Proporcionar experiências lúdicas e educativas que estimulem a criatividade e o desenvolvimento infantil em um ambiente seguro e mágico.</p>
+      </div>
+      
+      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-blue-400">
+        <div class="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
+          <span class="text-3xl">🌠</span>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Visão</h3>
+        <p class="text-gray-600">Ser referência em entretenimento infantil, onde cada visita se transforma em uma aventura inesquecível no universo da imaginação.</p>
+      </div>
+      
+      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-purple-400">
+        <div class="w-20 h-20 mx-auto mb-6 bg-purple-100 rounded-full flex items-center justify-center">
+          <span class="text-3xl">💖</span>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Valores</h3>
+        <p class="text-gray-600">Segurança, criatividade, inclusão e respeito pela individualidade de cada criança, criando memórias felizes para toda a família.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Estrutura -->
+<section class="py-20 bg-white" id="estrutura">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+      <div class="w-full md:w-1/2">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gradient-to-br from-orange-100 to-pink-100 rounded-2xl p-6 aspect-square flex flex-col items-center justify-center text-center">
+            <span class="text-5xl mb-4">⚽</span>
+            <h3 class="font-bold text-gray-800">Campo de futebol</h3>
+          </div>
+          <div class="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl p-6 aspect-square flex flex-col items-center justify-center text-center">
+            <span class="text-5xl mb-4">🎮</span>
+            <h3 class="font-bold text-gray-800">Área de games</h3>
+          </div>
+          <div class="bg-gradient-to-br from-green-100 to-teal-100 rounded-2xl p-6 aspect-square flex flex-col items-center justify-center text-center">
+            <span class="text-5xl mb-4">🏠</span>
+            <h3 class="font-bold text-gray-800">Brinquedoteca</h3>
+          </div>
+          <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 aspect-square flex flex-col items-center justify-center text-center">
+            <span class="text-5xl mb-4">💄</span>
+            <h3 class="font-bold text-gray-800">Espaço maquiagem</h3>
+          </div>
+        </div>
+      </div>
+      
+      <div class="w-full md:w-1/2">
+        <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">Infraestrutura</span>
+        <h2 class="text-4xl font-extrabold text-gray-900 mt-2 mb-6">Um universo de possibilidades</h2>
+        <p class="text-lg text-gray-600 mb-6">Nossas instalações foram cuidadosamente projetadas para oferecer diversão, segurança e conforto em cada detalhe.</p>
+        
+        <div class="space-y-4">
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+              <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-lg font-medium text-gray-900">Ambiente Seguro</h4>
+              <p class="text-gray-600">Monitoramento 360° e equipe treinada para garantir a segurança das crianças.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+              <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-lg font-medium text-gray-900">Espaço Higienizado</h4>
+              <p class="text-gray-600">Limpeza constante e protocolos rigorosos de higiene em todas as áreas.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+              <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-lg font-medium text-gray-900">Acessibilidade</h4>
+              <p class="text-gray-600">Espaço adaptado para garantir que todas as crianças possam brincar com conforto.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Blog Preview -->
+<section class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">Nosso diário</span>
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">Diário de bordo</h2>
+      <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">As últimas aventuras e novidades do nosso Planeta</p>
+    </div>
+
+    {% if latest_posts %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      {% for post in latest_posts %}
+      <article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
+        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="block overflow-hidden">
+          {% if post.cover_image and post.cover_image != 'default.jpg' %}
+          <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+          {% else %}
+          <div class="w-full h-48 bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          {% endif %}
+        </a>
+        <div class="p-6">
+          <div class="mb-3">
+            {% for cat in post.categories %}
+            <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">{{ cat.name }}</span>
+            {% endfor %}
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-indigo-600 transition-colors">
+            <a href="{{ url_for('main.post_detail', slug=post.slug) }}">{{ post.title }}</a>
+          </h3>
+          <p class="text-gray-600 mb-4 text-sm">
+            {{ post.content | striptags | truncate(100) }}
+          </p>
+          <div class="flex items-center text-sm text-gray-500">
+            <time datetime="{{ post.created_at.strftime('%Y-%m-%d') }}">{{ post.created_at.strftime('%d/%m/%Y') }}</time>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+      <h2 class="text-2xl font-semibold text-gray-700">Nenhuma Aventura Encontrada</h2>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.blog_archive') }}" class="inline-flex items-center font-semibold text-indigo-600 hover:text-indigo-800 group transition-colors">
+        Ver todas as aventuras
+        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section: CTA Final -->
+<section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-6">Pronto para embarcar nessa aventura?</h2>
+    <p class="text-xl opacity-90 max-w-2xl mx-auto mb-10">Entre em contato e vamos criar juntos momentos inesquecíveis para sua criança!</p>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="https://wa.me/5511950803725?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20os%20serviços%20do%20Planeta%20Imaginário." target="_blank" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-white text-indigo-600 rounded-full shadow-2xl hover:shadow-white/30 hover:scale-105 transform transition-all duration-300">
+        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.31 20.62C8.75 21.41 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.71 20.28 11.91C20.28 16.47 16.65 20.1 12.04 20.1C10.53 20.1 9.09 19.68 7.85 18.93L7.47 18.7L4.41 19.53L5.25 16.56L5.03 16.17C4.21 14.86 3.8 13.38 3.8 11.91C3.8 7.35 7.42 3.67 12.04 3.67ZM9.15 7.65C8.95 7.65 8.76 7.65 8.61 7.82C8.46 7.99 7.95 8.45 7.95 9.41C7.95 10.37 8.61 11.33 8.76 11.5C8.91 11.67 10.21 13.84 12.33 14.7C14.45 15.56 14.45 15.15 14.88 15.1C15.31 15.05 16.14 14.58 16.38 14.02C16.63 13.46 16.63 12.99 16.53 12.87C16.43 12.75 16.24 12.67 15.99 12.55C15.74 12.43 14.78 11.96 14.54 11.88C14.29 11.8 14.12 11.75 13.95 11.97C13.78 12.18 13.31 12.67 13.16 12.84C13.01 13.01 12.87 13.03 12.62 12.91C12.37 12.79 11.52 12.5 10.52 11.6C9.72 10.88 9.17 10.03 9.02 9.81C8.87 9.59 8.98 9.48 9.1 9.36C9.21 9.24 9.33 9.08 9.45 8.93C9.58 8.78 9.63 8.68 9.75 8.45C9.88 8.22 9.83 8.05 9.75 7.9C9.68 7.75 9.15 7.65 9.15 7.65Z"/>
+        </svg>
+        Falar no WhatsApp
+      </a>
+      
+      <a href="{{ url_for('main.contact') }}" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-transparent border-2 border-white text-white rounded-full shadow-2xl hover:bg-white hover:text-indigo-600 hover:scale-105 transform transition-all duration-300">
+        Preencher formulário
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Localização -->
+<section class="py-20 bg-white" id="location">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">Onde estamos</span>
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">Venha nos visitar!</h2>
+      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">Estamos localizados no Jundiaí Shopping, um ponto de fácil acesso no coração da cidade.</p>
+    </div>
+    
+    <div class="max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-xl border border-gray-200">
+      <div class="flex flex-col md:flex-row">
+        
+        <div class="md:w-1/2 p-8 md:p-12 bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex flex-col justify-center">
+          <h3 class="text-3xl font-bold mb-6">Informações de contato</h3>
+          
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-semibold text-indigo-200 mb-1">📍 Endereço</h4>
+              <p class="text-lg">Jundiaí Shopping - Piso G3, Loja S113<br>Av. 9 de Julho, 3333 - Jundiaí/SP</p>
+            </div>
+            
+            <div>
+              <h4 class="font-semibold text-indigo-200 mb-1">📱 Telefone/WhatsApp</h4>
+              <a href="https://wa.me/5511950803725" class="text-lg hover:underline block">(11) 95080-3725</a>
+            </div>
+            
+            <div>
+              <h4 class="font-semibold text-indigo-200 mb-1">⏰ Funcionamento</h4>
+              <p class="text-lg">Seg a Sáb: 10h às 22h<br>Dom e Feriados: 12h às 20h</p>
+            </div>
+            
+            <div class="pt-6">
+              <a href="https://www.google.com/maps/search/?api=1&query=Planeta+Imaginário+Jundiaí+Shopping" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 font-bold bg-white text-indigo-600 rounded-full shadow-lg hover:scale-105 transform transition-transform duration-300">
+                  <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Ver no Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="md:w-1/2 h-80 md:h-auto">
+          <a href="https://www.google.com/maps/search/?api=1&query=Planeta+Imaginario+Jundiai+Shopping" target="_blank" rel="noopener noreferrer" title="Clique para ver no Google Maps">
+            <img 
+              src="{{ url_for('static', filename='images/endereco.png') }}" 
+              alt="Mapa da localização do Planeta Imaginário no Jundiaí Shopping" 
+              class="h-full w-full object-cover"
+            >
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

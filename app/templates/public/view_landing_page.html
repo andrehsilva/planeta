@@ -1,0 +1,49 @@
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
+{% block title %}{{ lp.hero_title or lp.title }}{% endblock %}
+
+{% block public_content %}
+
+    {% if lp.hero_title %}
+    <section class="relative bg-gray-800 text-white text-center py-20 md:py-32" style="background-image: url('{{ url_for('static', filename='uploads/' + lp.hero_image) if lp.hero_image else '' }}'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">{{ lp.hero_title }}</h1>
+            {% if lp.hero_subtitle %}
+            <p class="text-lg md:text-xl max-w-3xl mx-auto">{{ lp.hero_subtitle|safe }}</p>
+            {% endif %}
+            {% if lp.hero_cta_text and lp.hero_cta_link %}
+            <a href="{{ lp.hero_cta_link }}" class="mt-8 inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                {{ lp.hero_cta_text }}
+            </a>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if lp.content_body or lp.content_image %}
+    <section class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4">
+            {% if lp.content_title %}
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12">{{ lp.content_title }}</h2>
+            {% endif %}
+            
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 max-w-6xl mx-auto">
+                {% if lp.content_image %}
+                <div class="w-full md:w-1/2">
+                    <img src="{{ url_for('static', filename='uploads/' + lp.content_image) }}" alt="{{ lp.content_title or 'Imagem de conteúdo' }}" class="rounded-lg shadow-xl w-full h-auto object-cover">
+                </div>
+                {% endif %}
+            
+                <div class="w-full {% if lp.content_image %}md:w-1/2{% endif %}">
+                    <div class="prose lg:prose-xl max-w-none">
+                        {{ lp.content_body|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Gerenciar Postagens</h1>
+    <a href="{{ url_for('dashboard.add_post') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center space-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        <span>Nova Postagem</span>
+    </a>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <form method="GET" action="{{ url_for('dashboard.list_posts') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 pb-6 border-b">
+        <div>
+            <label for="category" class="block text-sm font-medium text-gray-700">Filtrar por Categoria</label>
+            <select id="category" name="category" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <option value="">Todas as Categorias</option>
+                {% for category in all_categories %}
+                    <option value="{{ category.id }}" {% if filters.category == category.id %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="status" class="block text-sm font-medium text-gray-700">Filtrar por Status</label>
+            <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <option value="" {% if not filters.status %}selected{% endif %}>Todos os Status</option>
+                <option value="published" {% if filters.status == 'published' %}selected{% endif %}>Publicado</option>
+                <option value="draft" {% if filters.status == 'draft' %}selected{% endif %}>Rascunho</option>
+            </select>
+        </div>
+        <div class="flex items-end space-x-2">
+            <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Filtrar</button>
+            <a href="{{ url_for('dashboard.list_posts') }}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Limpar</a>
+        </div>
+    </form>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categorias</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for post in posts_pagination.items %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap"><div class="font-medium text-gray-900">{{ post.title|truncate(40) }}</div></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ post.author.username }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% for cat in post.categories %}{{ cat.name }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if post.is_published %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
+                        {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Rascunho</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ post.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end space-x-3">
+                        <a href="{{ url_for('dashboard.edit_post', post_id=post.id) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                        </a>
+                        <button @click="deleteUrl = '{{ url_for('dashboard.delete_post', post_id=post.id) }}'; deleteModalOpen = true" class="text-red-600 hover:text-red-900" title="Excluir">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-10 text-center text-gray-500">Nenhuma postagem encontrada com os filtros aplicados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if posts_pagination and posts_pagination.pages > 1 %}
+        {% with pagination=posts_pagination %}
+            {% include 'dashboard/_pagination.html' %}
+        {% endwith %}
+    {% endif %}
+</div>
+{% endblock %}

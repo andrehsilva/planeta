@@ -1,0 +1,35 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% from "macros/_form_helpers.html" import render_field %}
+
+{% block dashboard_content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+
+<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="space-y-8">
+
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-medium text-gray-900">Mensagens de WhatsApp</legend>
+                <p class="text-sm text-gray-500 mt-1">Use placeholders como [NOME_LEAD], [NOME_RESPONSAVEL] e [NOME_CRIANCA] que serão substituídos automaticamente.</p>
+                <div class="space-y-4 mt-4">
+                    {{ render_field(form.lead_whatsapp_message, rows=3) }}
+                    {{ render_field(form.client_whatsapp_message, rows=3) }}
+                    {{ render_field(form.birthday_congrats_message, rows=3) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-medium text-gray-900">Regras de Negócio</legend>
+                <div class="mt-4">
+                    {{ render_field(form.birthday_notification_days) }}
+                </div>
+            </fieldset>
+
+            <div class="pt-5">
+                {{ form.submit(class="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
+{% block title %}Blog - Planeta Imaginário{% endblock %}
+
+{% block public_content %}
+{# ✅ CORREÇÃO: Adicionado padding vertical (py-16) e um container principal #}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight">
+            Todas as nossas aventuras
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">
+            Navegue por todas as histórias e descobertas do Planeta Imaginário.
+        </p>
+    </div>
+
+    {% if posts_pagination.items %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts_pagination.items %}
+        <article class="flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group">
+            <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="overflow-hidden">
+                {% if post.cover_image and post.cover_image != 'default.jpg' %}
+                    <img class="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+                {% else %}
+                    <div class="h-56 w-full bg-indigo-100 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                {% endif %}
+            </a>
+            <div class="p-6 flex flex-col flex-grow">
+                <div class="mb-3">
+                    {% for cat in post.categories %}
+                        <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-1 rounded-full">{{ cat.name }}</span>
+                    {% endfor %}
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 leading-snug group-hover:text-indigo-600 transition-colors">
+                    <a href="{{ url_for('main.post_detail', slug=post.slug) }}">{{ post.title }}</a>
+                </h2>
+                <div class="mt-6 flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="h-10 w-10 rounded-full bg-gradient-to-r from-orange-400 to-pink-400 flex items-center justify-center font-bold text-white">
+                            {{ post.author.username[0]|upper }}
+                        </span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">{{ post.author.username }}</p>
+                        <div class="text-sm text-gray-500">
+                            <time datetime="{{ post.created_at.strftime('%Y-%m-%d') }}">{{ post.created_at.strftime('%d de %b, %Y') }}</time>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="mt-12">
+        {% if posts_pagination and posts_pagination.pages > 1 %}
+            {% with pagination=posts_pagination %}
+                {% include 'dashboard/_pagination.html' %}
+            {% endwith %}
+        {% endif %}
+    </div>
+    {% else %}
+        <div class="text-center py-16">
+            <h2 class="text-2xl font-semibold text-gray-700">Nenhuma Aventura Encontrada</h2>
+            <p class="mt-2 text-gray-500">Parece que ainda não publicamos nada. Volte em breve!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

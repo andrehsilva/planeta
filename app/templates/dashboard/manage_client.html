@@ -1,0 +1,49 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% from "macros/_form_helpers.html" import render_field %}
+
+{% block dashboard_content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+
+<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="space-y-6">
+
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-medium text-gray-900">Dados da Criança</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    {{ render_field(form.child_name) }}
+                    {{ render_field(form.child_date_of_birth, type='date') }}
+                </div>
+            </fieldset>
+
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-medium text-gray-900">Dados dos Responsáveis</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    {{ render_field(form.parent1_name) }}
+                    {{ render_field(form.parent1_phone) }}
+                    {{ render_field(form.parent2_name) }}
+                    {{ render_field(form.parent2_phone) }}
+                    {{ render_field(form.email) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-medium text-gray-900">Endereço e Contato</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                     {{ render_field(form.contact_phone) }}
+                     {{ render_field(form.address_cep, class="cep-mask") }}
+                     {{ render_field(form.address_street) }}
+                     {{ render_field(form.address_number) }}
+                     {{ render_field(form.address_neighborhood) }}
+                     {{ render_field(form.address_city) }}
+                </div>
+            </fieldset>
+
+            <div class="pt-5">
+                {{ form.submit(class="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

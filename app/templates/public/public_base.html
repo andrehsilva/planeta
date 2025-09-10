@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --color-primary: #4f46e5;      /* Indigo 600 */
+    --color-primary-dark: #4338ca;   /* Indigo 700 */
+    --color-secondary: #f97316;    /* Orange 500 */
+    --color-secondary-dark: #ea580c; /* Orange 600 */
+    --color-dark: #111827;         /* Gray 900 */
+    --color-text: #374151;         /* Gray 700 */
+    --color-light: #f9fafb;        /* Gray 50 */
+    --color-border: #e5e7eb;      /* Gray 200 */
+    --header-height: 6rem;         /* 96px */
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-text);
+    /* Removido 'scroll-behavior: smooth;' para dar controle total ao JS */
+  }
+
+  /* Efeito de sublinhado animado para links de navegação */
+  .nav-link-underline {
+    position: relative;
+    padding-bottom: 0.25rem;
+  }
+  .nav-link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease-in-out;
+  }
+  .nav-link-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Estilo do botão "Voltar ao Topo" */
+  .back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+  }
+  .back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .back-to-top:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-3px);
+  }
+  
+  /* Dropdown com transição */
+  .dropdown-menu {
+      transition: all 0.2s ease-out;
+  }
+
+  /* Esconde o menu mobile por padrão para evitar "flash" no carregamento */
+  [x-cloak] {
+      display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col antialiased">
+  
+  <header x-data="{ mobileMenuOpen: false, servicesOpen: false, scrolled: false }"
+          @scroll.window="scrolled = window.pageYOffset > 10"
+          @keydown.escape.window="mobileMenuOpen = false; servicesOpen = false"
+          class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg transition-shadow duration-300"
+          :class="{ 'shadow-lg': scrolled }">
+          
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-24">
+        <a href="{{ url_for('main.index') }}" class="flex-shrink-0 flex items-center space-x-3">
+          <img class="h-14 w-auto" src="{{ url_for('static', filename='images/logo-planeta.webp') }}" alt="Logo Planeta Imaginário">
+          
+        </a>
+
+        <div class="hidden lg:flex lg:items-center lg:space-x-8">
+          <a href="{{ url_for('main.index') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Home</a>
+          <a href="{{ url_for('main.blog_archive') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Blog</a>
+          <a href="{{ url_for('main.contact') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Contato</a>
+          
+          {% for lp in nav_landing_pages %}
+            <a href="{{ url_for('main.view_landing_page', slug=lp.slug) }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">{{ lp.title }}</a>
+          {% endfor %}
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <div class="hidden sm:flex items-center space-x-4">
+              <a href="https://instagram.com/planetaimaginariojundiai" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Instagram"><i class="fab fa-instagram text-xl"></i></a>
+              <a href="https://facebook.com/planetaimaginariojundiai" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f text-xl"></i></a>
+              <a href="{{ url_for('dashboard.index') }}" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Painel Administrativo"><i class="fas fa-th-large text-xl"></i></a>
+          </div>
+        
+          <a href="https://wa.me/5511950803725" target="_blank" rel="noopener noreferrer" class="hidden lg:flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            <img src="{{ url_for('static', filename='images/zap.png') }}" alt="Ícone WhatsApp" class="h-6 w-auto">
+            <span>Fale Conosco</span>
+          </a>
+      
+        
+          <div class="lg:hidden">
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-md text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+              <span class="sr-only">Abrir menu</span>
+              <i class="fas fa-bars text-2xl" x-show="!mobileMenuOpen"></i>
+              <i class="fas fa-times text-2xl" x-show="mobileMenuOpen" x-cloak></i>
+            </button>
+          </div>
+      </div>
+      </div>
+    </nav>
+    
+    <div x-show="mobileMenuOpen"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0 transform -translate-y-4"
+     x-transition:enter-end="opacity-100 transform translate-y-0"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100 transform translate-y-0"
+     x-transition:leave-end="opacity-0 transform -translate-y-4"
+     x-cloak
+     class="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200">
+    <div class="px-4 pt-4 pb-6">
+        <div class="space-y-2">
+            <a href="{{ url_for('main.index') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Home</a>
+            <a href="{{ url_for('main.blog_archive') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Blog</a>
+            <a href="{{ url_for('main.contact') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Contato</a>
+            
+            {% for lp in nav_landing_pages %}
+              <a href="{{ url_for('main.view_landing_page', slug=lp.slug) }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">{{ lp.title }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="pt-5 mt-5 border-t border-gray-200">
+            <div class="space-y-3">
+                <a href="https://wa.me/5511950803725" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-3 rounded-lg shadow-md transition-colors duration-300">
+                    <i class="fab fa-whatsapp mr-2 text-lg"></i>
+                    <span>Fale Conosco</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="flex justify-center items-center space-x-6 pt-6 mt-4">
+            <a href="https://instagram.com/planetaimaginariojundi" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600"><i class="fab fa-instagram text-2xl"></i></a>
+            <a href="https://facebook.com/planetaimaginariojundiai" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600"><i class="fab fa-facebook-f text-2xl"></i></a>
+            <a href="https://wa.me/5511950803725" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-green-600"><i class="fab fa-whatsapp text-2xl"></i></a>
+       </div>
+    </div>
+</div>
+  </header>
+
+  <main class="flex-grow {% if not full_width_hero %}pt-24{% endif %}">
+    {% block public_content %}{% endblock %}
+  </main>
+
+  <footer class="bg-gray-800 text-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="col-span-1 md:col-span-2 lg:col-span-1">
+          <img class="h-12 w-auto mb-6" src="{{ url_for('static', filename='images/logo-planeta.webp') }}" alt="Logo Planeta Imaginário">
+          <p class="text-gray-400 mb-6 text-sm leading-relaxed">Criando momentos mágicos e inesquecíveis para crianças e famílias em Jundiaí.</p>
+          <div class="flex space-x-4">
+            <a href="https://instagram.com/planetaimaginariojundiai" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-gray-700 hover:bg-indigo-600 rounded-full flex items-center justify-center transition-colors" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/planetaimaginariojundiai" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-gray-700 hover:bg-indigo-600 rounded-full flex items-center justify-center transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/5511950803725" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-gray-700 hover:bg-green-500 rounded-full flex items-center justify-center transition-colors" aria-label="Whatsapp"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6 tracking-wide">Links Rápidos</h3>
+          <ul class="space-y-3">
+            <li><a href="{{ url_for('main.index') }}" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+            <li><a href="{{ url_for('main.blog_archive') }}" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+            <li><a href="{{ url_for('main.contact') }}" class="text-gray-400 hover:text-white transition-colors">Contato</a></li>
+            <li><a href="{{ url_for('main.privacy_policy') }}" class="text-gray-400 hover:text-white transition-colors">Política de Privacidade</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6 tracking-wide">Contato</h3>
+          <ul class="space-y-4 text-gray-400">
+            <li class="flex items-start">
+              <i class="fas fa-map-marker-alt mt-1 text-orange-400 mr-4"></i>
+              <span>Jundiaí Shopping - Piso G3, Loja S113</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-phone-alt text-orange-400 mr-4"></i>
+              <a href="https://wa.me/5511950803725" class="hover:text-white transition-colors">(11) 95080-3725</a>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-envelope text-orange-400 mr-4"></i>
+              <a href="mailto:contato@planetaimaginario.com.br" class="hover:text-white transition-colors text-sm break-all">contato@planeta...</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-500 text-sm">
+        <p>&copy; Planeta Imaginário. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <a href="#" class="back-to-top" id="backToTop" aria-label="Voltar ao topo">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+  
+  <div id="consent-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-5 z-50 transform translate-y-full transition-transform duration-500 ease-in-out shadow-2xl" style="box-shadow: 0 -5px 25px rgba(0,0,0,0.2);">
+    <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-300 text-center sm:text-left">
+        🍪 Usamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa
+        <a href="{{ url_for('main.privacy_policy') }}" target="_blank" class="font-semibold text-white underline hover:text-orange-400 transition-colors">Política de Privacidade</a>.
+      </p>
+      <button id="accept-consent" class="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-colors duration-300">
+        Entendi
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const backToTopButton = document.getElementById('backToTop');
+  const consentBanner = document.getElementById('consent-banner');
+  const acceptButton = document.getElementById('accept-consent');
+  const headerHeight = 96; // Corresponde a h-24 no Tailwind (6rem)
+
+  // Lógica do Botão "Voltar ao Topo"
+  if (backToTopButton) {
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopButton.classList.add('show');
+      } else {
+        backToTopButton.classList.remove('show');
+      }
+    });
+
+    backToTopButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+  
+  // Lógica do Banner de Consentimento
+  if (consentBanner && acceptButton) {
+    if (localStorage.getItem('privacyConsentPlaneta') !== 'true') {
+      setTimeout(() => {
+        consentBanner.classList.remove('translate-y-full');
+      }, 1500);
+    }
+
+    acceptButton.addEventListener('click', () => {
+      localStorage.setItem('privacyConsentPlaneta', 'true');
+      consentBanner.classList.add('translate-y-full');
+    });
+  }
+
+  // --- NOVA LÓGICA DE ROLAGEM SUAVE INTELIGENTE ---
+
+  // Função reutilizável para rolar até uma âncora
+  const smoothScrollTo = (hash) => {
+    const targetElement = document.querySelector(hash);
+    if (targetElement) {
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Lógica 1: Rolagem suave ao CLICAR em um link de âncora
+  // Seleciona links que contêm "#" mas não são APENAS "#"
+  document.querySelectorAll('a[href*="#"]:not([href="#"])').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const linkUrl = new URL(this.href);
+      const currentUrl = new URL(window.location.href);
+
+      // Compara a URL base (sem a âncora) do link com a URL atual
+      // Se forem iguais, estamos na mesma página.
+      if (linkUrl.origin === currentUrl.origin && linkUrl.pathname === currentUrl.pathname) {
+        // Previne o comportamento padrão do navegador
+        e.preventDefault();
+        // Rola suavemente para a âncora
+        smoothScrollTo(this.hash);
+      }
+      // Se não forem iguais, o script não faz nada e deixa o navegador
+      // carregar a nova página normalmente.
+    });
+  });
+
+  // Lógica 2: Rolagem suave ao CARREGAR uma página que já tem uma âncora na URL
+  // (Ex: vindo de outra página ou link direto)
+  window.addEventListener('load', () => {
+    if (window.location.hash) {
+      // Usamos um timeout para garantir que a página esteja 100% renderizada
+      // e evitar que o scroll aconteça antes do layout estar pronto.
+      setTimeout(() => {
+        smoothScrollTo(window.location.hash);
+      }, 100);
+    }
+  });
+});
+</script>
+{% endblock %}
