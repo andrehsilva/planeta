@@ -107,16 +107,16 @@ class Lead(db.Model):
 
 class LandingPage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False, help_text="Título interno da página para organização.")
-    slug = db.Column(db.String(120), unique=True, nullable=False, help_text="A URL final da página (ex: /lp/nome-da-campanha).")
+    title = db.Column(db.String(120), nullable=False, comment="Título interno da página para organização.")
+    slug = db.Column(db.String(120), unique=True, nullable=False, comment="A URL final da página (ex: /lp/nome-da-campanha).")
     is_published = db.Column(db.Boolean, default=False, index=True)
 
     # --- Seção Principal (Hero) ---
     hero_title = db.Column(db.String(200))
     hero_subtitle = db.Column(db.Text)
     hero_image = db.Column(db.String(100), nullable=True)
-    hero_cta_text = db.Column(db.String(50), help_text="Texto do botão, ex: 'Saiba Mais'")
-    hero_cta_link = db.Column(db.String(255), help_text="Link de destino do botão")
+    hero_cta_text = db.Column(db.String(50), comment="Texto do botão, ex: 'Saiba Mais'")
+    hero_cta_link = db.Column(db.String(255), comment="Link de destino do botão")
 
     # --- Seção de Conteúdo ---
     content_title = db.Column(db.String(200))
@@ -186,7 +186,7 @@ class Settings(db.Model):
     birthday_congrats_message = db.Column(db.Text, default="Olá [NOME_RESPONSAVEL]! Passando para desejar um feliz aniversário para o(a) [NOME_CRIANCA]! 🎉🎈")
 
     # Regras de Aniversário
-    birthday_notification_days = db.Column(db.Integer, default=30, help_text="Número de dias de antecedência para destacar aniversariantes.")
+    birthday_notification_days = db.Column(db.Integer, default=30, comment="Número de dias de antecedência para destacar aniversariantes.")
 
     def __repr__(self):
         return f'<Settings {self.id}>'

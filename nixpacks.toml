@@ -1,0 +1,9 @@
+# nixpacks.toml
+
+[phases.setup]
+# Instala pacotes do sistema (do Ubuntu/Debian) necessários para compilar o numpy
+aptPkgs = ["build-essential", "python3-dev"]
+
+[start]
+# Comando para iniciar sua aplicação (o mesmo que estava no Procfile)
+cmd = "gunicorn 'app:create_app()'"
