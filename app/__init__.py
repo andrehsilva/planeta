@@ -2,6 +2,7 @@
 import os
 from flask import Flask
 from markupsafe import Markup
+from commands import create_admin
 
 # Importando as extensões que serão inicializadas
 from .extensions import db, migrate, login_manager
@@ -32,6 +33,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+
+
+    app.cli.add_command(create_admin)
 
     # 3. REGISTRAR BLUEPRINTS E OUTROS COMPONENTES DO APP
     # O 'with app.app_context()' garante que tudo aqui dentro "enxergue" o app.
