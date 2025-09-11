@@ -62,22 +62,24 @@ def save_picture(form_picture_data):
 
 @bp.route('/')
 @login_required
+@bp.route('/')
+@login_required
 def index():
     """Página principal do dashboard, agora com estatísticas completas."""
-    # --- Stats de Conteúdo e Landing Pages (Já existentes) ---
+    # --- Stats de Conteúdo e Landing Pages (Mantido) ---
     total_posts = Post.query.count()
     posts_publicados = Post.query.filter_by(is_published=True).count()
     total_categories = Category.query.count()
     total_landing_pages = LandingPage.query.count()
 
-    # --- Stats de Leads (Já existentes) ---
+    # --- Stats de Leads (Mantido) ---
     total_leads = Lead.query.count()
     lead_status_counts = db.session.query(
         Lead.status, func.count(Lead.id)
     ).group_by(Lead.status).all()
     leads_by_status = {status: count for status, count in lead_status_counts}
 
-    # --- ✅ Novas Stats de Clientes e Aniversários ---
+    # --- ✅ Stats de Clientes e Aniversários (CORRIGIDO) ---
     total_clients = Client.query.count()
     
     # Busca a configuração de dias de antecedência para o aviso
@@ -88,26 +90,31 @@ def index():
     today = date.today()
     end_date = today + timedelta(days=notification_days)
     
-    # Conta quantos clientes fazem aniversário entre hoje e a data final
-    upcoming_birthdays_count = 0
-    if today.year == end_date.year:
-        # Caso simples: o intervalo não cruza o fim do ano
+    # --- LÓGICA DE ANIVERSÁRIO PORTÁTIL USANDO EXTRACT ---
+    # Converte as datas para um formato numérico "dia do ano" (1-366)
+    # Isso resolve o problema de virada de ano de forma simples e eficiente.
+    today_ordinal = today.timetuple().tm_yday
+    end_date_ordinal = end_date.timetuple().tm_yday
+
+    # Extrai o dia do ano da data de nascimento diretamente no banco de dados
+    birthday_ordinal = extract('doy', Client.child_date_of_birth)
+
+    if today_ordinal <= end_date_ordinal:
+        # Caso normal: o intervalo não cruza o fim do ano (ex: 15/Maio - 15/Junho)
         upcoming_birthdays_count = Client.query.filter(
-            func.strftime('%m-%d', Client.child_date_of_birth) >= today.strftime('%m-%d'),
-            func.strftime('%m-%d', Client.child_date_of_birth) <= end_date.strftime('%m-%d')
+            birthday_ordinal.between(today_ordinal, end_date_ordinal)
         ).count()
     else:
-        # Caso complexo: o intervalo cruza a virada do ano (ex: Dezembro -> Janeiro)
-        # Conta do dia de hoje até o fim do ano
-        count_until_end_of_year = Client.query.filter(
-            func.strftime('%m-%d', Client.child_date_of_birth) >= today.strftime('%m-%d')
+        # Caso complexo: o intervalo cruza a virada do ano (ex: 15/Dez - 15/Jan)
+        # Conta aniversários do dia de hoje até o fim do ano (>=) OU do começo do ano até a data final (<=)
+        upcoming_birthdays_count = Client.query.filter(
+            or_(
+                birthday_ordinal >= today_ordinal,
+                birthday_ordinal <= end_date_ordinal
+            )
         ).count()
-        # Conta do início do próximo ano até a data final
-        count_from_start_of_year = Client.query.filter(
-            func.strftime('%m-%d', Client.child_date_of_birth) <= end_date.strftime('%m-%d')
-        ).count()
-        upcoming_birthdays_count = count_until_end_of_year + count_from_start_of_year
 
+    # --- Dicionário final de estatísticas ---
     stats = {
         'total_posts': total_posts,
         'posts_publicados': posts_publicados,
@@ -116,13 +123,10 @@ def index():
         'total_landing_pages': total_landing_pages,
         'total_leads': total_leads,
         'leads_by_status': leads_by_status,
-        # ✅ Adiciona as novas stats de clientes
         'total_clients': total_clients,
         'upcoming_birthdays': upcoming_birthdays_count
     }
     return render_template('dashboard/index.html', stats=stats)
-
-
 # --- ROTAS DE GERENCIAMENTO DE POSTS ---
 
 @bp.route('/posts')
