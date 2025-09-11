@@ -1,9 +1,24 @@
 # nixpacks.toml
 
 [phases.setup]
-# Instala pacotes do sistema (do Ubuntu/Debian) necessários para compilar o numpy
-aptPkgs = ["build-essential", "python3-dev"]
+# Pacotes do sistema necessários para compilar numpy, pandas e outras bibliotecas pesadas
+aptPkgs = [
+  "build-essential",  # compiladores e ferramentas
+  "python3.10-dev",   # headers da versão do Python
+  "libpq-dev",        # necessário para SQLAlchemy + psycopg2 (Postgres)
+  "gfortran",         # para numpy/scipy
+  "libatlas-base-dev",# otimizações de álgebra linear
+  "libstdc++6",       # evita erros de GLIBC
+]
+
+[phases.install]
+# Força o uso do Python 3.10
+python = "3.10"
+
+# Instala dependências do Python via requirements.txt
+pkgs = ["pip", "setuptools", "wheel"]
+install = "pip install --upgrade pip && pip install -r requirements.txt"
 
 [start]
-# Comando para iniciar sua aplicação (o mesmo que estava no Procfile)
+# Comando para iniciar a aplicação
 cmd = "gunicorn 'app:create_app()'"
