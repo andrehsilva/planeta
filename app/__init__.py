@@ -1,43 +1,64 @@
 # app/__init__.py
+import os
 from flask import Flask
-from config import Config  # Usaremos um arquivo de configuração separado
-from app.extensions import db, migrate, login
-from app.models import User
-from app import models 
-from markupsafe import Markup 
+from markupsafe import Markup
 
-def nl2br_filter(s):
-    """Converte quebras de linha em tags <br>."""
-    if s:
-        return Markup(s.replace('\n', '<br>\n'))
-    return ''
+# Importando as extensões que serão inicializadas
+from .extensions import db, migrate, login_manager
+from config import Config
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    """
+    Fábrica de aplicativos (Application Factory).
+    Cria e configura uma instância da aplicação Flask.
+    """
+    app = Flask(__name__, instance_relative_config=True)
+
+    # 1. CARREGAR A CONFIGURAÇÃO
+    # Carrega a configuração padrão a partir da classe/arquivo config.py
     app.config.from_object(config_class)
 
-    # Inicializa as extensões com o app
+    # CRÍTICO PARA PRODUÇÃO: Sobrescreve a URL do banco de dados se a variável
+    # de ambiente 'DATABASE_URL' estiver definida (como no EasyPanel).
+    if 'DATABASE_URL' in os.environ:
+        db_url = os.environ['DATABASE_URL']
+        # Garante a compatibilidade com o SQLAlchemy
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
-    app.jinja_env.filters['nl2br'] = nl2br_filter
-    
+    # 2. INICIALIZAR AS EXTENSÕES
+    # Conecta as extensões à instância do nosso aplicativo
     db.init_app(app)
     migrate.init_app(app, db)
-    login.init_app(app)
-  
+    login_manager.init_app(app)
 
-    # Registra os Blueprints
-    from app.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    # 3. REGISTRAR BLUEPRINTS E OUTROS COMPONENTES DO APP
+    # O 'with app.app_context()' garante que tudo aqui dentro "enxergue" o app.
+    with app.app_context():
+        # Importar os modelos aqui garante que eles sejam reconhecidos pelo Flask-Migrate
+        from . import models
 
-    from app.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+        # Registrar os Blueprints (módulos da nossa aplicação)
+        from .main import bp as main_bp
+        app.register_blueprint(main_bp)
 
-    from app.dashboard import bp as dashboard_bp
-    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+        from .auth import bp as auth_bp
+        app.register_blueprint(auth_bp, url_prefix='/auth')
 
-    # Essencial: Esta função diz ao Flask-Login como encontrar um usuário a partir do ID
-    @login.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
+        from .dashboard import bp as dashboard_bp
+        app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+
+        # Registrar o filtro Jinja de forma mais moderna
+        @app.template_filter('nl2br')
+        def nl2br_filter(s):
+            """Converte quebras de linha em tags <br>."""
+            return Markup(s.replace('\n', '<br>')) if s else ''
+
+        # Configurar o user_loader do Flask-Login
+        @login_manager.user_loader
+        def load_user(user_id):
+            """Diz ao Flask-Login como carregar um usuário a partir de um ID."""
+            return models.User.query.get(int(user_id))
 
     return app

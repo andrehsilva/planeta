@@ -5,6 +5,6 @@ from flask_login import LoginManager
 
 db = SQLAlchemy()
 migrate = Migrate()
-login = LoginManager()
-login.login_view = 'auth.login'
-login.login_message = "Por favor, faça login para acessar esta página."
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.login_message = "Por favor, faça login para acessar esta página."

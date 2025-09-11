@@ -25,3 +25,4 @@ wtforms==3.2.1
 wtforms-sqlalchemy==0.4.2
 openpyxl
 pandas
+psycopg2-binary
