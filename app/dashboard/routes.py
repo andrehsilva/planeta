@@ -59,9 +59,6 @@ def save_picture(form_picture_data):
 
 
 
-
-@bp.route('/')
-@login_required
 @bp.route('/')
 @login_required
 def index():
