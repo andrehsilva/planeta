@@ -41,4 +41,4 @@ EXPOSE $PORT
 # Passo 8: Comando de Execução
 # O comando que será executado quando o container iniciar.
 # Inicia o servidor Gunicorn, apontando para a nossa application factory.
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:create_app()"]
+CMD gunicorn --bind 0.0.0.0:$PORT "app:create_app()"
