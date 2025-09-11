@@ -34,7 +34,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-
+    from commands import create_admin
     app.cli.add_command(create_admin)
 
     # 3. REGISTRAR BLUEPRINTS E OUTROS COMPONENTES DO APP
