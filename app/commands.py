@@ -3,7 +3,7 @@ import click
 from flask.cli import with_appcontext
 from sqlalchemy import text  # Importe 'text' para executar SQL puro
 from app.extensions import db
-from app.models import User
+from app.models import User, HomePageContent
 
 @click.command(name='create_admin')
 @with_appcontext
