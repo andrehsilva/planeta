@@ -45,9 +45,18 @@ def db_reset_history():
         db.session.rollback()
         click.echo(f"Erro ao remover o histórico de migração: {e}")
 
+# ✅ ADICIONE ESTE NOVO COMANDO
+@click.command(name='db-drop-all')
+@with_appcontext
+def db_drop_all():
+    """Apaga todas as tabelas do banco de dados."""
+    if click.confirm('Tem certeza que quer apagar TODAS as tabelas do banco de dados? Seus dados serão perdidos.'):
+        db.drop_all()
+        click.echo("Todas as tabelas foram apagadas com sucesso.")
 
-# ✅ FUNÇÃO PARA REGISTRAR TODOS OS COMANDOS
+# ✅ ATUALIZE A FUNÇÃO DE REGISTRO
 def register_commands(app):
     """Registra os comandos CLI com a aplicação Flask."""
     app.cli.add_command(create_admin)
-    app.cli.add_command(db_reset_history) # Adiciona o novo comando
+    app.cli.add_command(db_reset_history)
+    app.cli.add_command(db_drop_all) # Adiciona o novo comando de drop
