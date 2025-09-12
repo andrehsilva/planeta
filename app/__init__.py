@@ -33,7 +33,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    app.cli.add_command(commands.create_admin)
+    
+    # ✅ CORREÇÃO APLICADA AQUI
+    # Esta única linha registra todos os comandos definidos em commands.py
+    commands.register_commands(app)
 
 
     # 3. REGISTRAR BLUEPRINTS E OUTROS COMPONENTES DO APP
