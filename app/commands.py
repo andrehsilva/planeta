@@ -54,9 +54,112 @@ def db_drop_all():
         db.drop_all()
         click.echo("Todas as tabelas foram apagadas com sucesso.")
 
+
+# ✅ ADICIONE ESTE NOVO COMANDO
+@click.command(name='seed-homepage')
+@with_appcontext
+def seed_homepage():
+    """Popula a tabela home_page_content com o conteúdo inicial."""
+    
+    # Tenta encontrar o primeiro registro de conteúdo.
+    # A rota da home já deve ter criado um, então ele deve existir.
+    content = HomePageContent.query.get(1)
+
+    if not content:
+        click.echo("Erro: Nenhum conteúdo da homepage encontrado para atualizar. Acesse a página inicial primeiro para criar o registro.")
+        return
+
+    # Atualizando todos os campos com os valores fornecidos
+    content.hero_title='Diversão além da imaginação'
+    content.hero_subtitle='Festas de aniversário temáticas e passaportes de diversão em um universo onde a imaginação não tem limites.'
+    content.cta_title='Pronto para embarcar nessa aventura?'
+    content.cta_subtitle='Entre em contato e vamos criar juntos momentos inesquecíveis para sua criança!'
+    content.hero_badge_text='Planeta Imaginário - Jundiaí Shopping - Piso G3, Loja S113'
+    content.hero_whatsapp_button_text='Fale conosco'
+    content.hero_whatsapp_button_link='https://wa.me/5511950803725'
+    content.hero_highlight_text='Espaço seguro e monitorado por profissionais especializados'
+    content.services_section_tagline='O que oferecemos'
+    content.services_section_title='Experiências inesquecíveis'
+    content.services_section_subtitle='Criamos momentos mágicos que ficarão para sempre na memória das crianças e das famílias'
+    content.services_card1_icon='🎂'
+    content.services_card1_title='Festas de aniversário'
+    content.services_card1_text='Celebre de forma única e personalizada com nossas festas temáticas que transformam sonhos em realidade.'
+    content.services_card1_item1='Temas exclusivos e personalizados'
+    content.services_card1_item2='Decoração temática completa'
+    content.services_card1_item3='Recreação especializada'
+    content.services_card1_cta_text='Solicitar orçamento'
+    content.services_card1_cta_link='https://'
+    content.services_card2_icon='🪪'
+    content.services_card2_title='Passaporte de diversão'
+    content.services_card2_text='Deixe as crianças se divertirem em um ambiente seguro enquanto você aproveita o shopping com tranquilidade.'
+    content.services_card2_item1='Monitoramento por câmeras'
+    content.services_card2_item2='Equipe especializada em recreação'
+    content.services_card2_item3='Ambiente lúdico e seguro'
+    content.services_card2_cta_text='Saiba mais'
+    content.services_card2_cta_link='https://'
+    content.services_card3_icon='⏰'
+    content.services_card3_title='Tempo livre'
+    content.services_card3_text='Momentos de lazer garantidos para as crianças aproveitarem nosso espaço mágico de forma segura e divertida, com opção a partir de 30 minutos.'
+    content.services_card3_item1='Diversão monitorada por profissionais especializados'
+    content.services_card3_item2='Atividades lúdicas em um ambiente seguro'
+    content.services_card3_item3='Tranquilidade para os pais aproveitarem o shopping'
+    content.services_card3_cta_text='Saiba mais'
+    content.services_card3_cta_link='https://'
+    content.values_section_tagline='Por que nos escolher'
+    content.values_section_title='Missão, visão e valores'
+    content.values_section_subtitle='Nosso compromisso é criar experiências que vão além da diversão'
+    content.values_card1_icon='✨'
+    content.values_card1_title='Missão'
+    content.values_card1_text='Proporcionar experiências lúdicas e educativas que estimulem a criatividade e o desenvolvimento infantil em um ambiente seguro e mágico.'
+    content.values_card2_icon='🌠'
+    content.values_card2_title='Visão'
+    content.values_card2_text='Ser referência em entretenimento infantil, onde cada visita se transforma em uma aventura inesquecível no universo da imaginação.'
+    content.values_card3_icon='💖'
+    content.values_card3_title='Valores'
+    content.values_card3_text='Segurança, criatividade, inclusão e respeito pela individualidade de cada criança, criando memórias felizes para toda a família.'
+    content.structure_section_tagline='Infraestrutura'
+    content.structure_section_title='Um universo de possibilidades'
+    content.structure_section_subtitle='Nossas instalações foram cuidadosamente projetadas para oferecer diversão, segurança e conforto em cada detalhe.'
+    content.structure_feature1_title='Ambientes'
+    content.structure_feature1_text='⏺ Campo de futebol\n⏺ Área de games\n⏺ Brinquedoteca\n⏺ Espaço maquiagem\n⏺ e muito mais!'
+    content.structure_feature2_title='Benefícios'
+    content.structure_feature2_text='Ambiente Seguro: Monitoramento 360° e equipe treinada para garantir a segurança das crianças.\nEspaço Higienizado: Limpeza constante e protocolos rigorosos de higiene em todas as áreas.\nAcessibilidade: Espaço adaptado para garantir que todas as crianças possam brincar com conforto.'
+    content.blog_section_tagline='Nosso diário'
+    content.blog_section_title='Diário de bordo'
+    content.blog_section_subtitle='As últimas aventuras e novidades do nosso Planeta'
+    content.blog_cta_text='Ver todas as aventuras'
+    content.cta_whatsapp_button_text='Falar no WhatsApp'
+    content.cta_form_button_text='Preencher formulário'
+    content.location_section_tagline='Onde estamos'
+    content.location_section_title='Venha nos visitar!'
+    content.location_section_subtitle='Estamos localizados no Jundiaí Shopping, um ponto de fácil acesso no coração da cidade.'
+    content.location_card_title='Informações de contato'
+    content.location_address_title='📍 Endereço'
+    content.location_address_text='Jundiaí Shopping - Piso G3, Loja S113<br>Av. 9 de Julho, 3333 - Jundiaí/SP'
+    content.location_phone_title='📱 Telefone/WhatsApp'
+    content.location_phone_text='(11) 95080-3725'
+    content.location_hours_title='⏰ Funcionamento'
+    content.location_hours_text='Seg a Sáb: 10h às 22h<br>Dom e Feriados: 12h às 20h'
+    content.location_gmaps_button_text='Ver no Google Maps'
+    content.location_gmaps_link='https://www.google.com/maps/search/?api=1&query=Planeta+Imaginario+Jundiai+Shopping'
+    content.location_image_alt='Mapa da localização do Planeta Imaginário no Jundiaí Shopping'
+    content.show_hero_section=True
+    content.hero_background_color_from='#5448E2'
+    content.hero_background_color_to='#1F2937'
+    content.show_services_section=True
+    content.show_values_section=True
+    content.show_structure_section=True
+    content.show_blog_section=True
+    content.show_cta_section=True
+    content.show_location_section=True
+
+    db.session.commit()
+    click.echo("Conteúdo da Homepage populado com sucesso!")
+
 # ✅ ATUALIZE A FUNÇÃO DE REGISTRO
 def register_commands(app):
     """Registra os comandos CLI com a aplicação Flask."""
     app.cli.add_command(create_admin)
     app.cli.add_command(db_reset_history)
     app.cli.add_command(db_drop_all) # Adiciona o novo comando de drop
+    app.cli.add_command(seed_homepage) # Adiciona o novo comando
