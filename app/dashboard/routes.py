@@ -828,22 +828,37 @@ def edit_homepage():
         # O populate_obj preenche todos os campos de texto do modelo com os dados do formulário
         form.populate_obj(content)
         
+        # --- ✅ 1. SALVAR A NOVA ORDEM ---
+        # Pega a nova ordem do campo escondido que criamos no template
+        new_order = request.form.get('section_order')
+        if new_order:
+            content.section_order = new_order
+        
         # Processa as novas imagens da galeria (se houver alguma)
         if form.gallery_images.data:
             for image_file in form.gallery_images.data:
                 if isinstance(image_file, FileStorage) and image_file.filename != '':
                     filename = save_picture(image_file)
-                    # A legenda será o nome do arquivo por padrão, você pode querer um campo para isso
+                    # A legenda será o nome do arquivo por padrão
                     caption = os.path.splitext(image_file.filename)[0].replace('_', ' ').title()
                     new_img = StructureImage(filename=filename, caption=caption, homepage_content_id=content.id)
                     db.session.add(new_img)
 
         db.session.commit()
-        flash('Conteúdo da página inicial atualizado com sucesso!', 'success')
+        flash('Conteúdo e ordem da página inicial atualizados com sucesso!', 'success')
         return redirect(url_for('dashboard.edit_homepage'))
     
-    return render_template('dashboard/manage_homepage.html', form=form, title="Editar Página Inicial", content=content)
-
+    # --- ✅ 2. ENVIAR A ORDEM ATUAL PARA O TEMPLATE ---
+    # Lê a ordem do banco, transforma em uma lista e envia para o manage_homepage.html
+    ordered_sections_admin = content.section_order.split(',')
+    
+    return render_template(
+        'dashboard/manage_homepage.html',
+        form=form,
+        title="Editar Página Inicial",
+        content=content,
+        ordered_sections_admin=ordered_sections_admin # Passa a lista ordenada para o template
+    )
 
 @bp.route('/homepage/image/delete/<int:image_id>', methods=['POST'])
 @login_required

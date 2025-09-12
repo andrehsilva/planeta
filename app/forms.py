@@ -145,6 +145,13 @@ class SettingsForm(FlaskForm):
     client_whatsapp_message = TextAreaField('Mensagem de WhatsApp para Clientes')
     birthday_congrats_message = TextAreaField('Mensagem de Parabéns (Aniversário)')
     birthday_notification_days = IntegerField('Avisar sobre aniversários com X dias de antecedência')
+    footer_address = TextAreaField('Endereço no Rodapé')
+    footer_phone = StringField('Telefone no Rodapé')
+    footer_email = StringField('E-mail no Rodapé')
+    footer_instagram_link = StringField('Link do Instagram')
+    footer_facebook_link = StringField('Link do Facebook')
+    footer_whatsapp_link = StringField('Link do WhatsApp (wa.me/...)')
+    footer_copyright_text = StringField('Texto de Copyright do Rodapé')
     submit = SubmitField('Salvar Configurações')
 
 
@@ -156,8 +163,17 @@ class ClientServiceForm(FlaskForm):
 
 
 
+# app/forms.py
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, BooleanField, SubmitField
+from flask_wtf.file import FileField, FileAllowed, MultipleFileField
+# ... (outros imports do seu arquivo) ...
+
 class HomePageContentForm(FlaskForm):
     # --- Seção Hero ---
+    show_hero_section = BooleanField('Exibir a seção "Topo da Página"?')
+    hero_background_color_from = StringField('Cor de Início do Degradê (Topo)', description="Use um formato hexadecimal, ex: #4f46e5")
+    hero_background_color_to = StringField('Cor de Fim do Degradê (Topo)', description="Use um formato hexadecimal, ex: #f97316")
     hero_badge_text = StringField('Texto do Badge de Localização (Topo)')
     hero_title = StringField('Título Principal')
     hero_subtitle = TextAreaField('Subtítulo')
@@ -166,11 +182,10 @@ class HomePageContentForm(FlaskForm):
     hero_highlight_text = StringField('Texto de Destaque (Espaço Seguro)')
 
     # --- Seção "O que oferecemos" ---
+    show_services_section = BooleanField('Exibir a seção "O que oferecemos"?')
     services_section_tagline = StringField('Tagline da Seção Serviços (ex: O que oferecemos)')
     services_section_title = StringField('Título da Seção Serviços')
     services_section_subtitle = TextAreaField('Subtítulo da Seção Serviços')
-    
-    # Card 1 (Festas)
     services_card1_icon = StringField('Ícone do Card 1 (emoji 🎂)')
     services_card1_title = StringField('Título do Card 1')
     services_card1_text = TextAreaField('Texto do Card 1')
@@ -179,19 +194,15 @@ class HomePageContentForm(FlaskForm):
     services_card1_item3 = StringField('Item 3 do Card 1')
     services_card1_cta_text = StringField('Texto do Link do Card 1')
     services_card1_cta_link = StringField('Link de Destino do Card 1')
-    
-    # Card 2 (Passaporte)
     services_card2_icon = StringField('Ícone do Card 2 (emoji 🪪)')
     services_card2_title = StringField('Título do Card 2')
     services_card2_text = TextAreaField('Texto do Card 2')
-    services_card2_item1 = StringField('Item 2 do Card 2')
+    services_card2_item1 = StringField('Item 1 do Card 2')
     services_card2_item2 = StringField('Item 2 do Card 2')
     services_card2_item3 = StringField('Item 3 do Card 2')
     services_card2_cta_text = StringField('Texto do Link do Card 2')
     services_card2_cta_link = StringField('Link de Destino do Card 2')
-    
-    # Card 3 (Genérico)
-    services_card3_icon = StringField('Ícone do Card 3 (emoji 🪪)')
+    services_card3_icon = StringField('Ícone do Card 3 (emoji 🚀)')
     services_card3_title = StringField('Título do Card 3')
     services_card3_text = TextAreaField('Texto do Card 3')
     services_card3_item1 = StringField('Item 1 do Card 3')
@@ -201,6 +212,7 @@ class HomePageContentForm(FlaskForm):
     services_card3_cta_link = StringField('Link de Destino do Card 3')
 
     # --- Seção "Por que nos escolher" ---
+    show_values_section = BooleanField('Exibir a seção "Por que nos escolher"?')
     values_section_tagline = StringField('Tagline da Seção Valores')
     values_section_title = StringField('Título da Seção Valores')
     values_section_subtitle = TextAreaField('Subtítulo da Seção Valores')
@@ -215,6 +227,7 @@ class HomePageContentForm(FlaskForm):
     values_card3_text = TextAreaField('Texto do Card 3 - Valores')
 
     # --- Seção "Infraestrutura" ---
+    show_structure_section = BooleanField('Exibir a seção "Infraestrutura"?')
     structure_section_tagline = StringField('Tagline da Seção Estrutura')
     structure_section_title = StringField('Título da Seção Estrutura')
     structure_section_subtitle = TextAreaField('Subtítulo da Seção Estrutura')
@@ -222,25 +235,27 @@ class HomePageContentForm(FlaskForm):
     structure_feature1_text = TextAreaField('Destaque 1: Texto')
     structure_feature2_title = StringField('Destaque 2: Título')
     structure_feature2_text = TextAreaField('Destaque 2: Texto')
-    
     gallery_images = MultipleFileField(
         'Adicionar novas imagens à galeria da Estrutura', 
         validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Apenas imagens são permitidas!')]
     )
 
     # --- Seção "Diário de bordo" ---
+    show_blog_section = BooleanField('Exibir a seção "Diário de bordo"?')
     blog_section_tagline = StringField('Tagline da Seção Blog')
     blog_section_title = StringField('Título da Seção Blog')
     blog_section_subtitle = TextAreaField('Subtítulo da Seção Blog')
     blog_cta_text = StringField('Texto do Link "Ver todas"')
     
     # --- Seção CTA Final ---
+    show_cta_section = BooleanField('Exibir a seção "Chamada Final"?')
     cta_title = StringField('Título do CTA Final')
     cta_subtitle = TextAreaField('Subtítulo do CTA Final')
     cta_whatsapp_button_text = StringField('Texto do Botão WhatsApp (CTA Final)')
     cta_form_button_text = StringField('Texto do Botão Formulário (CTA Final)')
     
     # --- Seção "Localização" ---
+    show_location_section = BooleanField('Exibir a seção "Localização"?')
     location_section_tagline = StringField('Tagline da Seção Localização')
     location_section_title = StringField('Título da Seção Localização')
     location_section_subtitle = TextAreaField('Subtítulo da Seção Localização')

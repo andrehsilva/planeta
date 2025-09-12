@@ -3,7 +3,7 @@ from flask import render_template, request, abort, flash, redirect, url_for
 from app.main import bp
 
 
-from app.models import Post, Lead , HomePageContent, LandingPage
+from app.models import Post, Lead , HomePageContent, LandingPage, Settings
 
 from app.extensions import db # Adicione db
 from app.forms import LeadForm
@@ -14,15 +14,27 @@ from flask import current_app
 
 @bp.route('/')
 def index():
-    latest_posts = Post.query.filter_by(is_published=True).order_by(Post.created_at.desc()).limit(3).all()
-    # Busca o conteúdo da homepage no banco de dados
+    # Busca o conteúdo da homepage
     content = HomePageContent.query.first()
 
+    # ✅ Se não existir conteúdo, cria um com os valores padrão do modelo
     if not content:
-        # Se não houver conteúdo, cria um com os valores padrão para não quebrar o site
         content = HomePageContent()
+        db.session.add(content)
+        db.session.commit()
 
-    return render_template('public/index.html', latest_posts=latest_posts, content=content)
+    # Busca os últimos posts
+    latest_posts = Post.query.filter_by(is_published=True).order_by(Post.created_at.desc()).limit(3).all()
+
+    # Agora, a variável 'content' tem a garantia de existir
+    ordered_sections = content.section_order.split(',')
+
+    return render_template(
+        'public/index.html',
+        content=content,
+        latest_posts=latest_posts,
+        ordered_sections=ordered_sections
+    )
 
 
 # --- ✅ NOVA ROTA PARA O ARQUIVO COMPLETO DO BLOG ---
@@ -90,20 +102,32 @@ def contact():
 
 
 @bp.app_context_processor
-def inject_landing_pages():
+def inject_global_variables():
     """
-    Injeta uma lista de landing pages publicadas em todos os templates
-    renderizados por este blueprint (o 'main').
+    Injeta variáveis globais (landing pages, configurações do site, etc.)
+    em todos os templates renderizados por este blueprint.
     """
     try:
-        # Busca no banco de dados todas as LPs que estão marcadas como publicadas
+        # Busca as landing pages publicadas para o menu de navegação
         published_landing_pages = LandingPage.query.filter_by(is_published=True).order_by(LandingPage.title).all()
-        # Retorna um dicionário que será adicionado ao contexto do template
-        return dict(nav_landing_pages=published_landing_pages)
+        
+        # Busca a única linha de configurações do site (para o rodapé, etc.)
+        site_settings = Settings.query.first()
+
+        # Retorna um único dicionário com todas as variáveis a serem injetadas
+        return dict(
+            nav_landing_pages=published_landing_pages,
+            site_settings=site_settings
+        )
     except Exception as e:
-        # Em caso de erro (ex: banco de dados não disponível), retorna uma lista vazia
-        return dict(nav_landing_pages=[])
-    
+        # Em caso de erro, retorna valores padrão para evitar que o site quebre
+        print(f"Erro ao injetar variáveis globais: {e}")
+        return dict(
+            nav_landing_pages=[],
+            site_settings=None
+        )
+
+
 
 def save_picture(form_picture, subfolder='uploads'):
     random_hex = secrets.token_hex(8)

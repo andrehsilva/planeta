@@ -188,6 +188,15 @@ class Settings(db.Model):
     # Regras de Aniversário
     birthday_notification_days = db.Column(db.Integer, default=30, comment="Número de dias de antecedência para destacar aniversariantes.")
 
+    # --- ✅ NOVOS CAMPOS PARA O RODAPÉ ---
+    footer_address = db.Column(db.Text, default="Jundiaí Shopping - Piso G3, Loja S113\nJundiaí, SP")
+    footer_phone = db.Column(db.String(50), default="(11) 95080-3725")
+    footer_email = db.Column(db.String(120), default="contato@planetaimaginario.com")
+    footer_instagram_link = db.Column(db.String(255), default="#")
+    footer_facebook_link = db.Column(db.String(255), default="#")
+    footer_whatsapp_link = db.Column(db.String(255), default="#")
+    footer_copyright_text = db.Column(db.String(200), default="© Planeta Imaginário. Todos os direitos reservados.")
+
     def __repr__(self):
         return f'<Settings {self.id}>'
     
@@ -211,14 +220,21 @@ class ClientService(db.Model):
 
 # app/models.py
 
-# ... (outros modelos) ...
-
-# app/models.py
-
 class HomePageContent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
+    # ✅ NOVO CAMPO PARA ARMAZENAR A ORDEM
+    section_order = db.Column(
+        db.Text,
+        nullable=False,
+        default='hero,services,values,structure,blog,cta,location',
+        server_default='hero,services,values,structure,blog,cta,location'
+    )
     
     # --- Seção Hero ---
+    show_hero_section = db.Column(db.Boolean, default=True)
+    hero_background_color_from = db.Column(db.String(20), default='#4f46e5')
+    hero_background_color_to = db.Column(db.String(20), default='#f97316')
     hero_badge_text = db.Column(db.String(200))
     hero_title = db.Column(db.String(200))
     hero_subtitle = db.Column(db.Text)
@@ -227,11 +243,10 @@ class HomePageContent(db.Model):
     hero_highlight_text = db.Column(db.String(200))
 
     # --- Seção "O que oferecemos" ---
+    show_services_section = db.Column(db.Boolean, default=True)
     services_section_tagline = db.Column(db.String(100))
     services_section_title = db.Column(db.String(200))
     services_section_subtitle = db.Column(db.Text)
-    
-    # Card 1 (Festas)
     services_card1_icon = db.Column(db.String(10))
     services_card1_title = db.Column(db.String(100))
     services_card1_text = db.Column(db.Text)
@@ -240,8 +255,6 @@ class HomePageContent(db.Model):
     services_card1_item3 = db.Column(db.String(100))
     services_card1_cta_text = db.Column(db.String(50))
     services_card1_cta_link = db.Column(db.String(255))
-    
-    # Card 2 (Passaporte)
     services_card2_icon = db.Column(db.String(10))
     services_card2_title = db.Column(db.String(100))
     services_card2_text = db.Column(db.Text)
@@ -250,8 +263,6 @@ class HomePageContent(db.Model):
     services_card2_item3 = db.Column(db.String(100))
     services_card2_cta_text = db.Column(db.String(50))
     services_card2_cta_link = db.Column(db.String(255))
-    
-    # Card 3 (Genérico)
     services_card3_icon = db.Column(db.String(10))
     services_card3_title = db.Column(db.String(100))
     services_card3_text = db.Column(db.Text)
@@ -262,6 +273,7 @@ class HomePageContent(db.Model):
     services_card3_cta_link = db.Column(db.String(255))
 
     # --- Seção "Por que nos escolher" ---
+    show_values_section = db.Column(db.Boolean, default=True)
     values_section_tagline = db.Column(db.String(100))
     values_section_title = db.Column(db.String(200))
     values_section_subtitle = db.Column(db.Text)
@@ -276,6 +288,7 @@ class HomePageContent(db.Model):
     values_card3_text = db.Column(db.Text)
 
     # --- Seção "Infraestrutura" ---
+    show_structure_section = db.Column(db.Boolean, default=True)
     structure_section_tagline = db.Column(db.String(100))
     structure_section_title = db.Column(db.String(200))
     structure_section_subtitle = db.Column(db.Text)
@@ -285,19 +298,22 @@ class HomePageContent(db.Model):
     structure_feature2_text = db.Column(db.Text)
     structure_images = db.relationship('StructureImage', backref='homepage', lazy=True, cascade="all, delete-orphan")
 
-    # --- Seção "Diário de bordo" ---
+    # --- Seção "Diário de bordo" (Blog) ---
+    show_blog_section = db.Column(db.Boolean, default=True)
     blog_section_tagline = db.Column(db.String(100))
     blog_section_title = db.Column(db.String(200))
     blog_section_subtitle = db.Column(db.Text)
     blog_cta_text = db.Column(db.String(100))
     
     # --- Seção CTA Final ---
+    show_cta_section = db.Column(db.Boolean, default=True)
     cta_title = db.Column(db.String(200))
     cta_subtitle = db.Column(db.Text)
     cta_whatsapp_button_text = db.Column(db.String(100))
     cta_form_button_text = db.Column(db.String(100))
     
     # --- Seção "Localização" ---
+    show_location_section = db.Column(db.Boolean, default=True)
     location_section_tagline = db.Column(db.String(100))
     location_section_title = db.Column(db.String(200))
     location_section_subtitle = db.Column(db.Text)

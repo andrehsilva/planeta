@@ -2,314 +2,64 @@
 {% set full_width_hero = True %}
 {% block public_content %}
 
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-orange-900">
-  <div class="absolute inset-0 z-0 opacity-20">
-    <div class="absolute top-0 left-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob"></div>
-    <div class="absolute top-0 right-0 w-72 h-72 bg-orange-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-    <div class="absolute bottom-0 left-0 w-72 h-72 bg-indigo-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-  </div>
+{# =================================================================== #}
+{#      LOOP PRINCIPAL DE RENDERIZAÇÃO DAS SEÇÕES                      #}
+{# =================================================================== #}
+{# Este loop lê a ordem das seções definida no painel de administração #}
+{# e usa 'include' para carregar o HTML de cada seção a partir de     #}
+{# arquivos separados na pasta /public/sections/.                    #}
+{# =================================================================== #}
 
-  <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-    <div class="max-w-5xl mx-auto">
-      <div class="flex flex-col items-center justify-center mb-12">
-        <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20">
-          <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span class="text-white font-medium">{{ content.hero_badge_text }}</span>
-        </div>
-      </div>
-      
-      <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-          {% if content and content.hero_title %}
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400">{{ content.hero_title.split(' ')[0] | safe }}</span> {{ content.hero_title.split(' ', 1)[-1] | safe }}
-          {% else %}
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400">Diversão</span> além da imaginação
-          {% endif %}
-      </h1>
-      <p class="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed mb-10">
-        {{ content.hero_subtitle }}
-      </p>
-      
-      <div class="flex justify-center items-center mb-16">
-        <a href="{{ content.hero_whatsapp_button_link }}" target="_blank" class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg hover:shadow-green-500/40 hover:scale-105 transform transition-all duration-300">
-            <img class="h-14 w-auto m-3" src="{{ url_for('static', filename='images/zap.png') }}" alt="Logo Planeta Imaginário">
-       {{ content.hero_whatsapp_button_text }}
-        </a>
-      </div>
-      <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-md mx-auto">
-        <div class="flex items-center justify-center space-x-2 text-white/90">
-          <svg class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-          <span class="text-sm font-medium">{{ content.hero_highlight_text }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-    <div class="animate-bounce">
-      <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
-    </div>
-  </div>
-</section>
+{% for section_name in ordered_sections %}
 
-<section class="py-20 bg-white" id="servicos">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.services_section_tagline }}</span>
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">{{ content.services_section_title }}</h2>
-      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">{{ content.services_section_subtitle }}</p>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-      <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-        <div class="w-20 h-20 mb-6 bg-orange-100 rounded-2xl flex items-center justify-center"><span class="text-4xl">{{ content.services_card1_icon }}</span></div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ content.services_card1_title }}</h3>
-        <p class="text-gray-600 mb-6">{{ content.services_card1_text }}</p>
-        <ul class="space-y-3 mb-8">
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card1_item1 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card1_item2 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card1_item3 }}</span></li>
-        </ul>
-        <a href="{{ content.services_card1_cta_link }}" class="inline-flex items-center font-semibold text-orange-600 hover:text-orange-700 group">{{ content.services_card1_cta_text }}<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
-      </div>
-      
-      <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-        <div class="w-20 h-20 mb-6 bg-blue-100 rounded-2xl flex items-center justify-center"><span class="text-4xl">{{ content.services_card2_icon }}</span></div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ content.services_card2_title }}</h3>
-        <p class="text-gray-600 mb-6">{{ content.services_card2_text }}</p>
-        <ul class="space-y-3 mb-8">
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card2_item1 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card2_item2 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card2_item3 }}</span></li>
-        </ul>
-        <a href="{{ content.services_card2_cta_link }}" class="inline-flex items-center font-semibold text-blue-600 hover:text-blue-700 group">{{ content.services_card2_cta_text }}<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
-      </div>
-
-      <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-        <div class="w-20 h-20 mb-6 bg-purple-100 rounded-2xl flex items-center justify-center"><span class="text-4xl">{{ content.services_card3_icon }}</span></div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ content.services_card3_title }}</h3>
-        <p class="text-gray-600 mb-6">{{ content.services_card3_text }}</p>
-        <ul class="space-y-3 mb-8">
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card3_item1 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card3_item2 }}</span></li>
-          <li class="flex items-center"><svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span class="text-gray-700">{{ content.services_card3_item3 }}</span></li>
-        </ul>
-        <a href="{{ content.services_card3_cta_link }}" class="inline-flex items-center font-semibold text-purple-600 hover:text-purple-700 group">{{ content.services_card3_cta_text }}<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="py-20 bg-gradient-to-br from-indigo-50 to-orange-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.values_section_tagline }}</span>
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">{{ content.values_section_title }}</h2>
-      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">{{ content.values_section_subtitle }}</p>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-orange-400">
-        <div class="w-20 h-20 mx-auto mb-6 bg-orange-100 rounded-full flex items-center justify-center"><span class="text-3xl">{{ content.values_card1_icon }}</span></div>
-        <h3 class="text-xl font-bold text-gray-900 mb-4">{{ content.values_card1_title }}</h3>
-        <p class="text-gray-600">{{ content.values_card1_text }}</p>
-      </div>
-      
-      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-blue-400">
-        <div class="w-20 h-20 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center"><span class="text-3xl">{{ content.values_card2_icon }}</span></div>
-        <h3 class="text-xl font-bold text-gray-900 mb-4">{{ content.values_card2_title }}</h3>
-        <p class="text-gray-600">{{ content.values_card2_text }}</p>
-      </div>
-      
-      <div class="bg-white rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg border-t-4 border-purple-400">
-        <div class="w-20 h-20 mx-auto mb-6 bg-purple-100 rounded-full flex items-center justify-center"><span class="text-3xl">{{ content.values_card3_icon }}</span></div>
-        <h3 class="text-xl font-bold text-gray-900 mb-4">{{ content.values_card3_title }}</h3>
-        <p class="text-gray-600">{{ content.values_card3_text }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section x-data="galleryModal()" class="py-20 bg-white" id="estrutura">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
-            <div class="w-full md:w-1/2">
-                <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.structure_section_tagline }}</span>
-                <h2 class="text-4xl font-extrabold text-gray-900 mt-2 mb-6">{{ content.structure_section_title }}</h2>
-                <p class="text-lg text-gray-600 mb-6">{{ content.structure_section_subtitle }}</p>
-                <div class="space-y-4">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0 mt-1"><svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>
-                    <div class="ml-3">
-                      <h4 class="text-lg font-medium text-gray-900">{{ content.structure_feature1_title }}</h4>
-                      <p class="text-gray-600">{{ content.structure_feature1_text }}</p>
-                    </div>
-                  </div>
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0 mt-1"><svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>
-                    <div class="ml-3">
-                      <h4 class="text-lg font-medium text-gray-900">{{ content.structure_feature2_title }}</h4>
-                      <p class="text-gray-600">{{ content.structure_feature2_text }}</p>
-                    </div>
-                  </div>
-                </div>
-            </div>
-
-            <div class="w-full md:w-1/2">
-                {% if content.structure_images %}
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                    {% for image in content.structure_images[:9] %}
-                    <div class="relative group aspect-square">
-                        <button 
-                            type="button" 
-                            @click="openModal({{ loop.index0 }})" 
-                            class="block w-full h-full focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50 rounded-2xl overflow-hidden">
-                            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" 
-                                 alt="{{ image.caption }}" 
-                                 class="w-full h-full object-cover rounded-2xl shadow-md group-hover:shadow-xl transition-all duration-300">
-                        </button>
-                        <!-- <div class="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl pointer-events-none">
-                            <p class="text-white font-semibold text-sm">{{ image.caption }}</p>
-                        </div> -->
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div x-show="isOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm">
-        <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <img :src="currentImageUrl" alt="Visualização da imagem" class="w-auto h-auto max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl">
-            <button @click="closeModal" class="absolute -top-12 -right-4 md:-top-4 md:-right-12 h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-        </div>
-        <button @click="prevImage" x-show="currentIndex > 0" class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button @click="nextImage" x-show="currentIndex < images.length - 1" class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-        </button>
-    </div>
-</section>
-
-<section class="py-20 bg-gray-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.blog_section_tagline }}</span>
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">{{ content.blog_section_title }}</h2>
-      <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">{{ content.blog_section_subtitle }}</p>
-    </div>
-
-    {% if latest_posts %}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-      {% for post in latest_posts %}
-      <article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="block overflow-hidden">
-          {% if post.cover_image and post.cover_image != 'default.jpg' %}
-          <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
-          {% else %}
-          <div class="w-full h-48 bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center"></div>
-          {% endif %}
-        </a>
-        <div class="p-6">
-          <!-- Adicionando o título do post -->
-          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ post.title }}</h3>
-          <!-- Adicionando a tag -->
-          <span class="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-semibold mb-3">
-            {{ content.blog_section_tagline }}
-          </span>
-          <p class="text-gray-600 line-clamp-3">{{ post.excerpt|default(post.content|striptags|truncate(150)) }}</p>
-          <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="mt-4 inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold">
-            Ler mais
-            <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-    {% else %}
-    <div class="text-center py-16"><h2 class="text-2xl font-semibold text-gray-700">Nenhuma Aventura Encontrada</h2></div>
+    {# 1. Renderiza a seção HERO #}
+    {% if section_name == 'hero' and content.show_hero_section %}
+        {% include "public/sections/_hero.html" %}
     {% endif %}
 
-    <div class="text-center mt-12">
-      <a href="{{ url_for('main.blog_archive') }}" class="inline-flex items-center font-semibold text-indigo-600 hover:text-indigo-800 group transition-colors">
-        {{ content.blog_cta_text }}
-        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-      </a>
-    </div>
-  </div>
-</section>
+    {# 2. Renderiza a seção SERVIÇOS #}
+    {% if section_name == 'services' and content.show_services_section %}
+        {% include "public/sections/_services.html" %}
+    {% endif %}
 
-<section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-4xl md:text-5xl font-extrabold mb-6">{{ content.cta_title }}</h2>
-    <p class="text-xl opacity-90 max-w-2xl mx-auto mb-10">{{ content.cta_subtitle }}</p>
-    
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="https://wa.me/5511950803725?text=Olá!%20Gostaria%20de%20saber%20mais" target="_blank" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-white text-indigo-600 rounded-full shadow-2xl hover:shadow-white/30 hover:scale-105 transform transition-all duration-300">
-       <img class="h-14 w-auto" src="{{ url_for('static', filename='images/zap.png') }}" alt="Logo Planeta Imaginário">
-          
-        {{ content.cta_whatsapp_button_text }}
-      </a>
-      <a href="{{ url_for('main.contact') }}" class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-transparent border-2 border-white text-white rounded-full shadow-2xl hover:bg-white hover:text-indigo-600 hover:scale-105 transform transition-all duration-300">
-        
-        {{ content.cta_form_button_text }}
-        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-      </a>
-    </div>
-  </div>
-</section>
+    {# 3. Renderiza a seção VALORES #}
+    {% if section_name == 'values' and content.show_values_section %}
+        {% include "public/sections/_values.html" %}
+    {% endif %}
 
-<section class="py-20 bg-white" id="location">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.location_section_tagline }}</span>
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mt-2">{{ content.location_section_title }}</h2>
-      <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">{{ content.location_section_subtitle }}</p>
-    </div>
-    
-    <div class="max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-xl border border-gray-200">
-      <div class="flex flex-col md:flex-row">
-        <div class="md:w-1/2 p-8 md:p-12 bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex flex-col justify-center">
-          <h3 class="text-3xl font-bold mb-6">{{ content.location_card_title }}</h3>
-          <div class="space-y-6">
-            <div>
-              <h4 class="font-semibold text-indigo-200 mb-1">{{ content.location_address_title }}</h4>
-              <p class="text-lg">{{ content.location_address_text | nl2br }}</p>
-            </div>
-            <div>
-              <h4 class="font-semibold text-indigo-200 mb-1">{{ content.location_phone_title }}</h4>
-              <a href="https://wa.me/55{{ content.location_phone_text | replace('(', '') | replace(')', '') | replace('-', '') | replace(' ', '') }}" class="text-lg hover:underline block">{{ content.location_phone_text }}</a>
-            </div>
-            <div>
-              <h4 class="font-semibold text-indigo-200 mb-1">{{ content.location_hours_title }}</h4>
-              <p class="text-lg">{{ content.location_hours_text | nl2br }}</p>
-            </div>
-            <div class="pt-6">
-              <a href="{{ content.location_gmaps_link }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 font-bold bg-white text-indigo-600 rounded-full shadow-lg hover:scale-105 transform transition-transform duration-300">
-                  <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"></svg>
-                  {{ content.location_gmaps_button_text }}
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="md:w-1/2 h-80 md:h-auto">
-          <a href="{{ content.location_gmaps_link }}" target="_blank" rel="noopener noreferrer" title="Clique para ver no Google Maps">
-            <img src="{{ url_for('static', filename='images/endereco.png') }}" alt="{{ content.location_image_alt }}" class="h-full w-full object-cover">
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    {# 4. Renderiza a seção ESTRUTURA #}
+    {% if section_name == 'structure' and content.show_structure_section %}
+        {% include "public/sections/_structure.html" %}
+    {% endif %}
 
+    {# 5. Renderiza a seção BLOG #}
+    {% if section_name == 'blog' and content.show_blog_section %}
+        {% include "public/sections/_blog.html" %}
+    {% endif %}
+
+    {# 6. Renderiza a seção CTA #}
+    {% if section_name == 'cta' and content.show_cta_section %}
+        {% include "public/sections/_cta.html" %}
+    {% endif %}
+
+    {# 7. Renderiza a seção LOCALIZAÇÃO #}
+    {% if section_name == 'location' and content.show_location_section %}
+        {% include "public/sections/_location.html" %}
+    {% endif %}
+
+{% endfor %}
+
+{# =================================================================== #}
+{#      SCRIPT DA GALERIA (Alpine.js)                                #}
+{# =================================================================== #}
+{# O código JavaScript que controla a galeria de fotos da seção      #}
+{# "Infraestrutura" é colocado aqui, no final do arquivo principal.  #}
+{#                                                                   #}
+{# MOTIVO: Isso garante que o script esteja sempre disponível para a   #}
+{# página, não importa a ordem ou a visibilidade da seção de         #}
+{# infraestrutura. É uma prática padrão de desenvolvimento web para   #}
+{# manter os scripts principais organizados e centralizados.         #}
+{# =================================================================== #}
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('galleryModal', () => ({

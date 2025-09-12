@@ -1,0 +1,61 @@
+<section x-data="galleryModal()" class="py-20 bg-white" id="estrutura">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+            <div class="w-full md:w-1/2">
+                <span class="font-semibold text-orange-500 uppercase tracking-wider text-sm">{{ content.structure_section_tagline }}</span>
+                <h2 class="text-4xl font-extrabold text-gray-900 mt-2 mb-6">{{ content.structure_section_title }}</h2>
+                <p class="text-lg text-gray-600 mb-6">{{ content.structure_section_subtitle }}</p>
+                <div class="space-y-4">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-1"><svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>
+                    <div class="ml-3">
+                      <h4 class="text-lg font-medium text-gray-900">{{ content.structure_feature1_title }}</h4>
+                      <p class="text-gray-600">{{ content.structure_feature1_text }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-1"><svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>
+                    <div class="ml-3">
+                      <h4 class="text-lg font-medium text-gray-900">{{ content.structure_feature2_title }}</h4>
+                      <p class="text-gray-600">{{ content.structure_feature2_text }}</p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2">
+                {% if content.structure_images %}
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for image in content.structure_images[:9] %}
+                    <div class="relative group aspect-square">
+                        <button 
+                            type="button" 
+                            @click="openModal({{ loop.index0 }})" 
+                            class="block w-full h-full focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50 rounded-2xl overflow-hidden">
+                            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" 
+                                 alt="{{ image.caption }}" 
+                                 class="w-full h-full object-cover rounded-2xl shadow-md group-hover:shadow-xl transition-all duration-300">
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div x-show="isOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm">
+        <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <img :src="currentImageUrl" alt="Visualização da imagem" class="w-auto h-auto max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl">
+            <button @click="closeModal" class="absolute -top-12 -right-4 md:-top-4 md:-right-12 h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <button @click="prevImage" x-show="currentIndex > 0" class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button @click="nextImage" x-show="currentIndex < images.length - 1" class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+    </div>
+</section>

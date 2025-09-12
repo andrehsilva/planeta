@@ -4,14 +4,13 @@
 {% block dashboard_content %}
 <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }}</h1>
 
-<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+<div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
     <form method="POST" novalidate>
         {{ form.hidden_tag() }}
         <div class="space-y-8">
 
-            <fieldset class="border-t border-gray-200 pt-6">
-                <legend class="text-lg font-medium text-gray-900">Mensagens de WhatsApp</legend>
-                <p class="text-sm text-gray-500 mt-1">Use placeholders como [NOME_LEAD], [NOME_RESPONSAVEL] e [NOME_CRIANCA] que serão substituídos automaticamente.</p>
+            <fieldset>
+                <legend class="text-lg font-medium text-gray-900">Mensagens Automáticas</legend>
                 <div class="space-y-4 mt-4">
                     {{ render_field(form.lead_whatsapp_message, rows=3) }}
                     {{ render_field(form.client_whatsapp_message, rows=3) }}
@@ -19,15 +18,28 @@
                 </div>
             </fieldset>
 
-            <fieldset class="border-t border-gray-200 pt-6">
-                <legend class="text-lg font-medium text-gray-900">Regras de Negócio</legend>
-                <div class="mt-4">
+            <fieldset>
+                <legend class="text-lg font-medium text-gray-900">Regras de Aniversário</legend>
+                <div class="space-y-4 mt-4">
                     {{ render_field(form.birthday_notification_days) }}
                 </div>
             </fieldset>
 
+            <fieldset>
+                <legend class="text-lg font-medium text-gray-900">Configurações do Rodapé</legend>
+                <div class="space-y-4 mt-4">
+                    {{ render_field(form.footer_address, rows=3) }}
+                    {{ render_field(form.footer_phone) }}
+                    {{ render_field(form.footer_email) }}
+                    {{ render_field(form.footer_instagram_link) }}
+                    {{ render_field(form.footer_facebook_link) }}
+                    {{ render_field(form.footer_whatsapp_link) }}
+                    {{ render_field(form.footer_copyright_text) }}
+                </div>
+            </fieldset>
+
             <div class="pt-5">
-                {{ form.submit(class="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700") }}
+                {{ form.submit(class="w-full ...") }}
             </div>
         </div>
     </form>
