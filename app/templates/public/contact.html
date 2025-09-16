@@ -36,7 +36,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-orange-200">WhatsApp</p>
-                                    <a href="https://wa.me/5519999999999" target="_blank" class="font-semibold text-base hover:text-white transition-colors duration-200 block">(19) 99999-9999</a>
+                                    <a href="{{ site_settings.footer_whatsapp_link or '#' }}" target="_blank" class="font-semibold text-base hover:text-white transition-colors duration-200 block">{{ site_settings.footer_phone if site_settings }}</a>
                                 </div>
                             </div>
                             
@@ -49,7 +49,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-orange-200">E-mail</p>
-                                    <a href="mailto:contato@planetaimaginario.com.br" class="font-semibold text-base hover:text-white transition-colors duration-200 block">contato@planetaimaginario.com.br</a>
+                                    <a href="mailto:{{ site_settings.footer_email if site_settings }}" class="font-semibold text-base hover:text-white transition-colors duration-200 block">{{ site_settings.footer_email if site_settings }}</a>
                                 </div>
                             </div>
                         </div>
