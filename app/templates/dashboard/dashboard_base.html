@@ -1,15 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- x-data unificado para controlar o menu mobile e o modal de exclusão -->
-<div x-data="{ mobileMenuOpen: false, deleteModalOpen: false, deleteUrl: '' }" class="min-h-screen bg-gray-50">
+<div x-data="{ mobileMenuOpen: false, contentMenuOpen: false, deleteModalOpen: false, deleteUrl: '' }" class="min-h-screen bg-gray-50 md:flex">
     
-    <!-- ✅ MENU MOBILE OFF-CANVAS MELHORADO E MODERNIZADO -->
-    <div x-show="mobileMenuOpen" class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
-        <!-- Overlay -->
+    <div class="hidden md:flex md:flex-shrink-0">
+        <div class="flex flex-col w-64">
+            <div class="flex items-center h-16 flex-shrink-0 px-4 bg-white border-b border-gray-200">
+                <img class="h-10 w-auto" src="{{ url_for('static', filename='images/logo-planeta.webp') }}" alt="Logo Planeta Imaginário">
+            </div>
+            <div class="flex-1 flex flex-col overflow-y-auto bg-white border-r border-gray-200">
+                <nav class="flex-1 px-4 py-4 space-y-2">
+                    <a href="{{ url_for('dashboard.index') }}" class="{% if request.endpoint == 'dashboard.index' %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-home mr-3 text-lg w-6 text-center"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('dashboard.edit_homepage') }}" class="{% if 'edit_homepage' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-desktop mr-3 text-lg w-6 text-center"></i> HomePage
+                    </a>
+                    
+                    <div @click.away="contentMenuOpen = false" class="relative">
+                        <button @click="contentMenuOpen = !contentMenuOpen" class="w-full text-left {% if 'post' in request.endpoint or 'category' in request.endpoint or 'popup' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                            <i class="fas fa-pencil-alt mr-3 text-lg w-6 text-center"></i>
+                            <span class="flex-1">Conteúdo</span>
+                            <svg class="w-4 h-4 ml-2 transform transition-transform" :class="{'rotate-180': contentMenuOpen}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div x-show="contentMenuOpen" x-transition class="mt-2 space-y-1 pl-8">
+                            <a href="{{ url_for('dashboard.list_posts') }}" class="block px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">Postagens</a>
+                            <a href="{{ url_for('dashboard.list_categories') }}" class="block px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">Categorias</a>
+                            <a href="{{ url_for('dashboard.list_popups') }}" class="block px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">Popups</a>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('dashboard.list_landing_pages') }}" class="{% if 'landing' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-file-alt mr-3 text-lg w-6 text-center"></i> Landing Pages
+                    </a>
+                    <a href="{{ url_for('dashboard.leads') }}" class="{% if 'leads' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-bullhorn mr-3 text-lg w-6 text-center"></i> Leads
+                    </a>
+                    <a href="{{ url_for('dashboard.list_clients') }}" class="{% if 'client' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-users mr-3 text-lg w-6 text-center"></i> Clientes
+                    </a>
+                    <a href="{{ url_for('dashboard.settings') }}" class="{% if 'settings' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-cog mr-3 text-lg w-6 text-center"></i> Configurações
+                    </a>
+                    <a href="{{ url_for('main.index') }}" target="_blank" class="text-gray-600 hover:bg-gray-100 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-globe-americas mr-3 text-lg w-6 text-center"></i> Ver Site
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="mobileMenuOpen" class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true" x-cloak>
         <div x-show="mobileMenuOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-600 bg-opacity-75" @click="mobileMenuOpen = false" aria-hidden="true"></div>
         
-        <!-- Painel do Menu -->
         <div x-show="mobileMenuOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex-1 flex flex-col max-w-xs w-full bg-white">
             <div class="absolute top-0 right-0 -mr-12 pt-2">
                 <button @click="mobileMenuOpen = false" type="button" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -21,49 +64,27 @@
                 <div class="flex-shrink-0 flex items-center px-4">
                      <img class="h-10 w-auto" src="{{ url_for('static', filename='images/logo-planeta.webp') }}" alt="Logo Planeta Imaginário">
                 </div>
-                <!-- Navegação Mobile com Ícones -->
                 <nav class="mt-8 px-2 space-y-1">
-                    <a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        Home
-                    </a>
-                    
-                    <a href="{{ url_for('dashboard.index') }}" class="{% if request.endpoint == 'dashboard.index' %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        Dashboard
-                    </a>
-                    <a href="{{ url_for('dashboard.edit_homepage') }}" class="{% if request.endpoint == 'dashboard.edit_homepage' %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        HomePage
-                    </a>
-                    <a href="{{ url_for('dashboard.list_posts') }}" class="{% if 'post' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        Postagens
-                    </a>
-                    <a href="{{ url_for('dashboard.list_categories') }}" class="{% if 'category' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                        Categorias
-                    </a>
-                    <a href="{{ url_for('dashboard.list_landing_pages') }}" class="{% if 'landing' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h2m-2 4h2m-2 4h2m-2 4h2m-6 4h2m-2 4h2m-2 4h2m-2 4h2" /></svg>
-                        Landing Pages
-                    </a>
-                    <a href="{{ url_for('dashboard.leads') }}" class="{% if 'leads' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h2m-2 4h2m-2 4h2m-2 4h2m-6 4h2m-2 4h2m-2 4h2m-2 4h2" /></svg>
-                        Leads
-                    </a>
-                    <a href="{{ url_for('dashboard.list_clients') }}" class="{% if 'list_clients' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h2m-2 4h2m-2 4h2m-2 4h2m-6 4h2m-2 4h2m-2 4h2m-2 4h2" /></svg>
-                        Clientes
-                    </a>
-                    <a href="{{ url_for('dashboard.settings') }}" class="{% if 'settings' in request.endpoint %}bg-indigo-100 text-indigo-800{% else %}text-gray-600 hover:bg-gray-100{% endif %} group flex items-center px-2 py-2 text-base font-medium rounded-md">
-                        <svg class="mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h2m-2 4h2m-2 4h2m-2 4h2m-6 4h2m-2 4h2m-2 4h2m-2 4h2" /></svg>
-                        Configurações
-                    </a>
-                    
+                    <a href="{{ url_for('dashboard.index') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-home mr-4 text-lg w-6 text-center"></i>Dashboard</a>
+                    <a href="{{ url_for('dashboard.edit_homepage') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-desktop mr-4 text-lg w-6 text-center"></i>HomePage</a>
+                    <div @click.away="contentMenuOpen = false">
+                        <button @click="contentMenuOpen = !contentMenuOpen" class="w-full text-left text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                            <i class="fas fa-pencil-alt mr-4 text-lg w-6 text-center"></i>
+                            <span class="flex-1">Conteúdo</span>
+                            <svg class="w-5 h-5 ml-2 transform transition-transform" :class="{'rotate-180': contentMenuOpen}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div x-show="contentMenuOpen" x-transition class="mt-1 space-y-1 pl-9">
+                            <a href="{{ url_for('dashboard.list_posts') }}" class="block px-3 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-100">Postagens</a>
+                            <a href="{{ url_for('dashboard.list_categories') }}" class="block px-3 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-100">Categorias</a>
+                            <a href="{{ url_for('dashboard.list_popups') }}" class="block px-3 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-100">Popups</a>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('dashboard.list_landing_pages') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-file-alt mr-4 text-lg w-6 text-center"></i>Landing Pages</a>
+                    <a href="{{ url_for('dashboard.leads') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-bullhorn mr-4 text-lg w-6 text-center"></i>Leads</a>
+                    <a href="{{ url_for('dashboard.list_clients') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-users mr-4 text-lg w-6 text-center"></i>Clientes</a>
+                    <a href="{{ url_for('dashboard.settings') }}" class="text-gray-600 hover:bg-gray-100 group flex items-center px-2 py-2 text-base font-medium rounded-md"><i class="fas fa-cog mr-4 text-lg w-6 text-center"></i>Configurações</a>
                 </nav>
             </div>
-            <!-- Seção de Usuário no Mobile -->
             <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
                 <div class="flex-shrink-0 w-full group block">
                     <div class="flex items-center">
@@ -75,43 +96,20 @@
                 </div>
             </div>
         </div>
-        <div class="flex-shrink-0 w-14"></div>
     </div>
 
-    <!-- Layout Principal -->
     <div class="flex flex-col flex-1">
-        <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
+        <header class="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
-                    <!-- Esquerda: Logo (Desktop) e Botão Hamburger (Mobile) -->
-                    <div class="flex items-center">
-                        <button @click="mobileMenuOpen = true" type="button" class="p-2 rounded-md text-gray-500 md:hidden">
-                            <span class="sr-only">Abrir menu</span>
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                        </button>
-                        <a href="{{ url_for('dashboard.index') }}" class="hidden md:flex items-center ml-4">
-                            <img class="h-10 w-auto" src="{{ url_for('static', filename='images/logo-planeta.webp') }}" alt="Logo Planeta Imaginário">
-                        </a>
-                    </div>
-                    
-                    <!-- ✅ Centro: MENU DESKTOP CORRIGIDO E COMPLETO -->
-                    <nav class="hidden md:flex space-x-2">
-                        <a href="{{ url_for('dashboard.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'dashboard.index' %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Dashboard</a>
-                        <a href="{{ url_for('dashboard.edit_homepage') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'edit_homepage' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">HomePage</a>   
-                        <a href="{{ url_for('dashboard.list_posts') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'post' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Postagens</a>
-                        <a href="{{ url_for('dashboard.list_categories') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'category' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Categorias</a>
-                        <a href="{{ url_for('dashboard.list_landing_pages') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'landing' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Landing Pages</a>
-                        <a href="{{ url_for('dashboard.leads') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'leads' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Leads</a>
-                        <a href="{{ url_for('dashboard.list_clients') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'list_clients' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Clientes</a>
-                        <a href="{{ url_for('dashboard.settings') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if 'settings' in request.endpoint %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Configurações</a>
-                        <a href="{{ url_for('main.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if request.endpoint == 'main.index' %}bg-indigo-100 text-indigo-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Site</a>
-                        
-                    </nav>
-
-                    <!-- Direita: Usuário e Logout -->
+                    <button @click="mobileMenuOpen = true" type="button" class="p-2 rounded-md text-gray-500 md:hidden">
+                        <span class="sr-only">Abrir menu</span>
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="flex-1"></div>
                     <div class="flex items-center space-x-4">
                         <span class="text-gray-600 text-sm hidden sm:block">Olá, {{ current_user.username }}</span>
-                        <a href="{{ url_for('auth.logout') }}" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition duration-150 ease-in-out">
+                        <a href="{{ url_for('auth.logout') }}" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">
                             Sair
                         </a>
                     </div>
@@ -121,7 +119,6 @@
 
         <main class="flex-1">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <!-- Mensagens Flash -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -131,13 +128,13 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <!-- Conteúdo da página -->
+                
                 {% block dashboard_content %}{% endblock %}
             </div>
         </main>
     </div>
     
-    <div x-show="deleteModalOpen" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+    <div x-show="deleteModalOpen" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;" x-cloak>
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="deleteModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="deleteModalOpen = false" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>

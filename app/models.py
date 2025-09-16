@@ -333,3 +333,31 @@ class StructureImage(db.Model):
     filename = db.Column(db.String(100), nullable=False)
     caption = db.Column(db.String(100), nullable=False) # Ex: 'Campo de Futebol'
     homepage_content_id = db.Column(db.Integer, db.ForeignKey('home_page_content.id'), nullable=False)
+
+
+# app/models.py
+
+# ... (outros modelos) ...
+
+# app/models.py
+
+class Popup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False, comment="Título interno para identificação no dashboard.")
+    image_filename = db.Column(db.String(100), nullable=False, comment="Nome do arquivo da imagem.")
+    target_url = db.Column(db.String(255), nullable=False, comment="Link de destino ao clicar na imagem.")
+    is_active = db.Column(db.Boolean, default=False, index=True, comment="Só pode haver um popup ativo por vez.")
+    
+    # ✅ NOVO CAMPO ADICIONADO AQUI
+    display_mode = db.Column(
+        db.String(50), 
+        nullable=False, 
+        default='show_once', 
+        comment="Modo de exibição: 'show_once' (mostrar uma vez) ou 'always_show' (mostrar sempre)."
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Popup {self.title}>'

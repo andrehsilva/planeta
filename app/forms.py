@@ -6,7 +6,6 @@ from flask_wtf.file import FileField, FileAllowed, MultipleFileField
 from wtforms.validators import DataRequired, Email, Length, Optional, Regexp, NumberRange
 from wtforms.fields import StringField, DateField, TextAreaField, SubmitField
 
-
 from app.models import Category
 from wtforms import widgets
 from wtforms import Form
@@ -163,11 +162,29 @@ class ClientServiceForm(FlaskForm):
 
 
 
-# app/forms.py
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SubmitField
-from flask_wtf.file import FileField, FileAllowed, MultipleFileField
-# ... (outros imports do seu arquivo) ...
+class PopupForm(FlaskForm):
+    title = StringField('Título Interno (para seu controle)', validators=[DataRequired()])
+    image = FileField('Imagem do Popup', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Apenas imagens são permitidas!')
+    ])
+    target_url = StringField('Link de Destino (URL)', validators=[DataRequired()])
+    
+    # ✅ ESTE CAMPO ESTÁ FALTANDO NO SEU ARQUIVO
+    # Adicione este campo de seleção
+    display_mode = SelectField(
+        'Modo de Exibição',
+        choices=[
+            ('show_once', 'Mostrar uma vez por sessão do navegador'),
+            ('always_show', 'Mostrar em todo carregamento de página')
+        ],
+        validators=[DataRequired()]
+    )
+
+    is_active = BooleanField('Ativar este popup? (Isso desativará qualquer outro popup ativo)')
+    submit = SubmitField('Salvar Popup')
+   
+
+
 
 class HomePageContentForm(FlaskForm):
     # --- Seção Hero ---

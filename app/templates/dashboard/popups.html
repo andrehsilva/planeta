@@ -1,0 +1,56 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+    <a href="{{ url_for('dashboard.add_popup') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors">
+        Adicionar Novo Popup
+    </a>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b-2 border-gray-200">
+            <tr>
+                <th class="p-3 text-sm font-semibold tracking-wide">Título Interno</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Imagem</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Status</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for popup in popups %}
+            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                <td class="p-3 text-gray-700">{{ popup.title }}</td>
+                <td class="p-3">
+                    <img src="{{ url_for('static', filename='uploads/' + popup.image_filename) }}" alt="{{ popup.title }}" class="h-16 w-auto rounded-md object-cover">
+                </td>
+                <td class="p-3">
+                    {% if popup.is_active %}
+                        <span class="bg-green-200 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Ativo</span>
+                    {% else %}
+                        <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2 py-1 rounded-full">Inativo</span>
+                    {% endif %}
+                </td>
+                <td class="p-3 flex items-center space-x-3">
+                    <a href="{{ url_for('dashboard.edit_popup', popup_id=popup.id) }}" class="text-indigo-600 hover:text-indigo-800" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    
+                    <button type="button" 
+                            @click="deleteUrl = '{{ url_for('dashboard.delete_popup', popup_id=popup.id) }}'; deleteModalOpen = true"
+                            class="text-red-600 hover:text-red-800" 
+                            title="Excluir">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="p-3 text-center text-gray-500">Nenhum popup encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

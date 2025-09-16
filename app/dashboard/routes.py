@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from slugify import slugify
 from werkzeug.datastructures import FileStorage
 
+
 from sqlalchemy import func, extract, or_
 
 from urllib.parse import quote
@@ -16,8 +17,8 @@ from io import BytesIO
 
 from app.dashboard import bp
 from app.extensions import db
-from app.models import Post, Category, User, Image, LandingPage, Lead, Client, Settings, ClientService, HomePageContent, StructureImage 
-from app.forms import CategoryForm, PostForm, LeadForm, LandingPageForm, ClientForm, ImportForm, SettingsForm, ClientServiceForm,  HomePageContentForm
+from app.models import Post, Category, User, Image, LandingPage, Lead, Client, Settings, ClientService, HomePageContent, StructureImage , Popup
+from app.forms import CategoryForm, PostForm, LeadForm, LandingPageForm, ClientForm, ImportForm, SettingsForm, ClientServiceForm,  HomePageContentForm, PopupForm
 
 from datetime import date, timedelta
 
@@ -878,3 +879,107 @@ def delete_structure_image(image_id):
     db.session.commit()
     flash('Imagem da galeria foi excluída.', 'success')
     return redirect(url_for('dashboard.edit_homepage'))
+
+
+
+
+@bp.route('/popups')
+@login_required
+def list_popups():
+    """Lista todos os popups criados."""
+    popups = Popup.query.order_by(Popup.created_at.desc()).all()
+    return render_template('dashboard/popups.html', popups=popups, title="Gerenciar Popups")
+
+@bp.route('/popups/new', methods=['GET', 'POST'])
+@login_required
+def add_popup():
+    """Adiciona um novo popup."""
+    form = PopupForm()
+    if form.validate_on_submit():
+        if not form.image.data:
+            flash('O campo de imagem é obrigatório para um novo popup.', 'danger')
+            return render_template('dashboard/manage_popup.html', form=form, title="Novo Popup")
+
+        # Se este popup for ativado, desativa todos os outros primeiro
+        if form.is_active.data:
+            Popup.query.update({Popup.is_active: False})
+
+        # Salva a imagem
+        filename = save_picture(form.image.data)
+        
+        new_popup = Popup(
+            title=form.title.data,
+            image_filename=filename,
+            target_url=form.target_url.data,
+            is_active=form.is_active.data,
+            display_mode=form.display_mode.data 
+        )
+        db.session.add(new_popup)
+        db.session.commit()
+        flash('Popup criado com sucesso!', 'success')
+        return redirect(url_for('dashboard.list_popups'))
+        
+    return render_template('dashboard/manage_popup.html', form=form, title="Novo Popup")
+
+
+@bp.route('/popups/edit/<int:popup_id>', methods=['GET', 'POST'])
+@login_required
+def edit_popup(popup_id):
+    """Edita um popup existente."""
+    popup = Popup.query.get_or_404(popup_id)
+    form = PopupForm(obj=popup)
+
+    if form.validate_on_submit():
+        # Se este popup for ativado, desativa todos os outros
+        if form.is_active.data:
+            Popup.query.filter(Popup.id != popup_id).update({Popup.is_active: False})
+
+        # Se uma nova imagem foi enviada, salva e atualiza o nome do arquivo
+        if form.image.data:
+            # (Opcional: deletar a imagem antiga do servidor)
+            popup.image_filename = save_picture(form.image.data)
+
+        popup.title = form.title.data
+        popup.target_url = form.target_url.data
+        popup.is_active = form.is_active.data
+        popup.display_mode = form.display_mode.data
+        
+        db.session.commit()
+        flash('Popup atualizado com sucesso!', 'success')
+        return redirect(url_for('dashboard.list_popups'))
+
+    return render_template('dashboard/manage_popup.html', form=form, title="Editar Popup", popup=popup)
+
+
+@bp.route('/popups/delete/<int:popup_id>', methods=['POST'])
+@login_required
+def delete_popup(popup_id):
+    """Deleta um popup."""
+    popup = Popup.query.get_or_404(popup_id)
+    # (Opcional: deletar o arquivo de imagem do servidor)
+    db.session.delete(popup)
+    db.session.commit()
+    flash('Popup deletado com sucesso!', 'success')
+    return redirect(url_for('dashboard.list_popups'))
+
+
+# app/main/routes.py
+
+
+@bp.app_context_processor
+def inject_global_variables():
+    """Injeta variáveis globais em todos os templates."""
+    try:
+        published_landing_pages = LandingPage.query.filter_by(is_published=True).order_by(LandingPage.title).all()
+        site_settings = Settings.query.first()
+        # ✅ BUSCA O POPUP ATIVO
+        active_popup = Popup.query.filter_by(is_active=True).first()
+
+        return dict(
+            nav_landing_pages=published_landing_pages,
+            site_settings=site_settings,
+            active_popup=active_popup  # ✅ INJETA O POPUP
+        )
+    except Exception as e:
+        print(f"Erro ao injetar variáveis globais: {e}")
+        return dict(nav_landing_pages=[], site_settings=None, active_popup=None)
