@@ -10,6 +10,14 @@
         <div class="space-y-8">
 
             <fieldset>
+                <legend class="text-lg font-medium text-gray-900">Informações Gerais (SEO)</legend>
+                <div class="space-y-4 mt-4">
+                    {{ render_field(form.business_name) }}
+                    {{ render_field(form.site_description, rows=3) }}
+                </div>
+            </fieldset>
+
+            <fieldset>
                 <legend class="text-lg font-medium text-gray-900">Mensagens Automáticas</legend>
                 <div class="space-y-4 mt-4">
                     {{ render_field(form.lead_whatsapp_message, rows=3) }}
@@ -39,7 +47,7 @@
             </fieldset>
 
             <div class="pt-5">
-                {{ form.submit(class="w-full ...") }}
+                {{ form.submit(class="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700") }}
             </div>
         </div>
     </form>

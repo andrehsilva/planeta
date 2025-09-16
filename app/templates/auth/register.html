@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "macros/_form_helpers.html" import render_field %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg w-full max-w-md">
+        <h3 class="text-2xl font-bold text-center">Criar Conta de Colaborador</h3>
+        
+        <form method="POST" action="{{ url_for('auth.register') }}" class="mt-6">
+            {{ form.hidden_tag() }}
+            <div class="space-y-4">
+                {{ render_field(form.username) }}
+                {{ render_field(form.email) }}
+                {{ render_field(form.password) }}
+                {{ render_field(form.confirm_password) }}
+            </div>
+            
+            <div class="mt-6">
+                {{ form.submit(class="w-full px-6 py-3 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+            </div>
+
+            <div class="mt-6 text-center text-sm">
+                <p class="text-gray-600">
+                    Já tem uma conta?
+                    <a href="{{ url_for('auth.login') }}" class="font-medium text-indigo-600 hover:underline">
+                        Faça o login aqui
+                    </a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

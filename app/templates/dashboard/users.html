@@ -1,0 +1,75 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b-2 border-gray-200">
+            <tr>
+                <th class="p-3 text-sm font-semibold tracking-wide">Usuário</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Email</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Função</th>
+                <th class="p-3 text-sm font-semibold tracking-wide">Status</th>
+                <th class="p-3 text-sm font-semibold tracking-wide text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                <td class="p-3 text-gray-700 font-medium">{{ user.username }}</td>
+                <td class="p-3 text-gray-700">{{ user.email }}</td>
+                <td class="p-3 text-gray-700">
+                    <span class="font-semibold {% if user.is_admin %}text-indigo-600{% else %}text-gray-600{% endif %}">
+                        {{ user.role|capitalize }}
+                    </span>
+                </td>
+                <td class="p-3">
+                    {% if user.is_approved %}
+                        <span class="bg-green-200 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Aprovado</span>
+                    {% else %}
+                        <span class="bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full">Pendente</span>
+                    {% endif %}
+                </td>
+                <td class="p-3">
+                    <div class="flex items-center justify-center space-x-4">
+                        {% if not user.is_approved %}
+                        <form method="POST" action="{{ url_for('dashboard.approve_user', user_id=user.id) }}" class="inline-block">
+                            <button type="submit" class="text-green-600 hover:text-green-800" title="Aprovar Usuário">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('dashboard.toggle_admin', user_id=user.id) }}" class="inline-block">
+                            <button type="submit" class="text-blue-600 hover:text-blue-800" title="Alternar Admin/Colaborador">
+                                <i class="fas fa-user-shield"></i>
+                            </button>
+                        </form>
+                        
+                        <a href="{{ url_for('dashboard.admin_reset_password', user_id=user.id) }}" class="text-gray-600 hover:text-gray-800" title="Redefinir Senha">
+                            <i class="fas fa-key"></i>
+                        </a>
+
+                        <button type="button" 
+                                @click="deleteUrl = '{{ url_for('dashboard.delete_user', user_id=user.id) }}'; deleteModalOpen = true"
+                                class="text-red-600 hover:text-red-800" 
+                                title="Excluir Usuário">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="p-3 text-center text-gray-500">Nenhum usuário encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -126,6 +126,9 @@ def inject_global_variables():
             nav_landing_pages=[],
             site_settings=None
         )
+    
+
+
 
 
 

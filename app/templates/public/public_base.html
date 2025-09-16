@@ -143,7 +143,7 @@
        class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-5 z-50 shadow-2xl">
       <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p class="text-sm text-gray-300 text-center sm:text-left">
-              🍪 Usamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa <a href="#" target="_blank" class="font-semibold text-white underline hover:text-orange-400">Política de Privacidade</a>.
+              🍪 Usamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa <a href="{{ url_for('main.privacy_policy') }}" target="_blank" class="font-semibold text-white underline hover:text-orange-400">Política de Privacidade</a>.
           </p>
           <button @click="acceptConsent" class="flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg shadow-md">
               Entendi
@@ -292,5 +292,41 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => smoothScrollTo(window.location.hash), 100);
     }
 });
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Playground",
+  "name": "{{ site_settings.business_name if site_settings }}",
+  "description": "{{ site_settings.site_description if site_settings }}",
+  "image": "{{ url_for('static', filename='images/logo-planeta.webp', _external=True) }}",
+  "url": "{{ url_for('main.index', _external=True) }}",
+  "telephone": "+55{{ site_settings.footer_phone.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') if site_settings and site_settings.footer_phone else '' }}",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site_settings.footer_address.splitlines()[0] if site_settings and site_settings.footer_address else '' }}",
+    "addressLocality": "{{ site_settings.footer_address.splitlines()[1].split(',')[0] if site_settings and site_settings.footer_address and site_settings.footer_address.splitlines()|length > 1 else '' }}",
+    "addressRegion": "{{ site_settings.footer_address.splitlines()[1].split(',')[1].strip() if site_settings and site_settings.footer_address and site_settings.footer_address.splitlines()|length > 1 and site_settings.footer_address.splitlines()[1].split(',')|length > 1 else '' }}",
+    "addressCountry": "BR"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "10:00",
+      "closes": "22:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Sunday", "PublicHolidays"],
+      "opens": "12:00",
+      "closes": "20:00"
+    }
+  ],
+  "sameAs": [
+    "{{ site_settings.footer_instagram_link if site_settings }}",
+    "{{ site_settings.footer_facebook_link if site_settings }}"
+  ] 
+}
 </script>
 {% endblock %}

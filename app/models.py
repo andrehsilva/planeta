@@ -10,23 +10,37 @@ post_categories = db.Table('post_categories',
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
 )
 
-class User(UserMixin, db.Model): # Adicione UserMixin aqui
+# app/models.py
+
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(256)) # Aumentei o tamanho por segurança
-    role = db.Column(db.String(20), nullable=False, default='crianca')
+    password_hash = db.Column(db.String(256))
     
+    # ✅ ALTERADO: O padrão para novos registros agora é 'colaborador'
+    role = db.Column(db.String(20), nullable=False, default='colaborador')
+
+    # ✅ NOVO CAMPO ADICIONADO
+    is_approved = db.Column(db.Boolean, nullable=False, default=False, server_default='f')
+    
+    # Seus campos existentes
     date_of_birth = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # --- MÉTODOS NOVOS PARA SENHA ---
+    # Métodos de senha (sem alterações)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+        
+    # ✅ NOVA PROPRIEDADE ADICIONADA
+    # Facilita a verificação se o usuário é admin
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -179,6 +193,11 @@ class Client(db.Model):
 
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
+    # ✅ CAMPOS ADICIONADOS PARA SEO
+    business_name = db.Column(db.String(100), default="Planeta Imaginário")
+    site_description = db.Column(db.Text, default="Espaço de recreação infantil e festas de aniversário temáticas no Shopping.")
+   
     
     # Mensagens WhatsApp
     lead_whatsapp_message = db.Column(db.Text, default="Olá [NOME_LEAD], recebemos seu contato e em breve retornaremos!")

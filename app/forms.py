@@ -3,12 +3,54 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, BooleanField, SubmitField, TextAreaField, FieldList, FormField, SelectField, HiddenField, IntegerField
 from wtforms_sqlalchemy.fields import QuerySelectMultipleField
 from flask_wtf.file import FileField, FileAllowed, MultipleFileField
-from wtforms.validators import DataRequired, Email, Length, Optional, Regexp, NumberRange
+from wtforms.validators import DataRequired, Email, Length, Optional, Regexp, NumberRange, EqualTo
 from wtforms.fields import StringField, DateField, TextAreaField, SubmitField
 
 from app.models import Category
 from wtforms import widgets
 from wtforms import Form
+
+
+class RegistrationForm(FlaskForm):
+    """Formulário de registro para novos colaboradores."""
+    username = StringField('Nome de Usuário', validators=[DataRequired(), Length(min=3, max=64)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Senha', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField(
+        'Confirmar Senha', 
+        validators=[
+            DataRequired(), 
+            EqualTo('password', message='As senhas devem ser iguais.')
+        ]
+    )
+    submit = SubmitField('Registrar')
+
+class ChangePasswordForm(FlaskForm):
+    """Formulário para o usuário logado mudar sua própria senha."""
+    current_password = PasswordField('Senha Atual', validators=[DataRequired()])
+    new_password = PasswordField('Nova Senha', validators=[DataRequired(), Length(min=6)])
+    confirm_new_password = PasswordField(
+        'Confirmar Nova Senha', 
+        validators=[
+            DataRequired(), 
+            EqualTo('new_password', message='As senhas devem ser iguais.')
+        ]
+    )
+    submit = SubmitField('Alterar Senha')
+
+
+
+class AdminResetPasswordForm(FlaskForm):
+    """Formulário para o admin definir uma nova senha para qualquer usuário."""
+    new_password = PasswordField('Nova Senha', validators=[DataRequired(), Length(min=6)])
+    confirm_new_password = PasswordField(
+        'Confirmar Nova Senha', 
+        validators=[
+            DataRequired(), 
+            EqualTo('new_password', message='As senhas devem ser iguais.')
+        ]
+    )
+    submit = SubmitField('Redefinir Senha')
 
 
 class LoginForm(FlaskForm):
@@ -140,6 +182,10 @@ class ImportForm(FlaskForm):
 
 
 class SettingsForm(FlaskForm):
+    business_name = StringField('Nome do Negócio (para SEO)')
+    site_description = TextAreaField('Descrição Geral do Site (para SEO)', 
+                                     description="Uma breve descrição do negócio, com até 160 caracteres.")
+
     lead_whatsapp_message = TextAreaField('Mensagem de WhatsApp para Leads')
     client_whatsapp_message = TextAreaField('Mensagem de WhatsApp para Clientes')
     birthday_congrats_message = TextAreaField('Mensagem de Parabéns (Aniversário)')
