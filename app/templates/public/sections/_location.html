@@ -33,7 +33,13 @@
         </div>
         <div class="md:w-1/2 h-80 md:h-auto">
           <a href="{{ content.location_gmaps_link }}" target="_blank" rel="noopener noreferrer" title="Clique para ver no Google Maps">
-            <img src="{{ url_for('static', filename='images/endereco.png') }}" alt="{{ content.location_image_alt }}" class="h-full w-full object-cover">
+            
+            {% if 'Campinas' in content.location_address_text %}
+                <img src="{{ url_for('static', filename='images/endereco_campinas.png') }}" alt="{{ content.location_image_alt }}" class="h-full w-full object-cover">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/endereco_jundiai.png') }}" alt="{{ content.location_image_alt }}" class="h-full w-full object-cover">
+            {% endif %}
+            
           </a>
         </div>
       </div>
