@@ -32,6 +32,13 @@
         {% include "public/sections/_structure.html" %}
     {% endif %}
 
+    {# --- INÍCIO DA ALTERAÇÃO --- #}
+    {# 4.1 Renderiza a seção VÍDEOS #}
+    {% if section_name == 'videos' and content.show_videos_section %}
+        {% include "public/sections/_videos.html" %}
+    {% endif %}
+    {# --- FIM DA ALTERAÇÃO --- #}
+
     {# 5. Renderiza a seção BLOG #}
     {% if section_name == 'blog' and content.show_blog_section %}
         {% include "public/sections/_blog.html" %}

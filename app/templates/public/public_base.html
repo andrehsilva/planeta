@@ -35,6 +35,11 @@
       </a>
       <div class="hidden lg:flex lg:items-center lg:space-x-8">
         <a href="{{ url_for('main.index') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Home</a>
+        
+        {% for lp in nav_landing_pages %}
+        <a href="{{ url_for('main.view_landing_page', slug=lp.slug) }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">{{ lp.title }}</a>
+        {% endfor %}
+        
         <a href="{{ url_for('main.blog_archive') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Blog</a>
         <a href="{{ url_for('main.contact') }}" class="font-medium text-gray-700 hover:text-indigo-600 nav-link-underline">Contato</a>
       </div>
@@ -72,6 +77,11 @@
   <div x-show="mobileMenuOpen" x-transition x-cloak class="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200">
     <div class="px-4 pt-4 pb-6">
         <a href="{{ url_for('main.index') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Home</a>
+
+        {% for lp in nav_landing_pages %}
+        <a href="{{ url_for('main.view_landing_page', slug=lp.slug) }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">{{ lp.title }}</a>
+        {% endfor %}
+
         <a href="{{ url_for('main.blog_archive') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Blog</a>
         <a href="{{ url_for('main.contact') }}" class="block py-2 px-3 font-medium text-gray-700 rounded-md hover:bg-gray-100">Contato</a>
         
@@ -132,7 +142,6 @@
       </button>
   </div>
   
-  <!-- Banner de Consentimento -->
   <div x-data="consentBanner" x-show="showBanner" x-cloak 
        x-transition:enter="transition ease-out duration-500" 
        x-transition:enter-start="transform translate-y-full" 
@@ -152,7 +161,6 @@
   </div>
 </div>
 
-<!-- Popup Modal -->
 {% if active_popup %}
 <div x-data="popupModal" x-show="showPopup" x-cloak 
      x-transition:enter="transition ease-out duration-300" 
@@ -185,10 +193,8 @@ document.addEventListener('alpine:init', () => {
         showBanner: false,
         
         init() {
-            // Verifica se o usuário já deu consentimento
             const hasConsent = localStorage.getItem('planeta_privacy_consent');
             if (hasConsent !== 'accepted') {
-                // Delay para mostrar o banner após carregamento da página
                 setTimeout(() => {
                     this.showBanner = true;
                 }, 1000);
@@ -212,25 +218,16 @@ document.addEventListener('alpine:init', () => {
             this.storageKey = `planeta_popup_${this.popupId}_closed`;
             
             if (this.displayMode === 'always_show') {
-                // Sempre mostrar o popup
-                setTimeout(() => {
-                    this.showPopup = true;
-                }, 2500);
+                setTimeout(() => { this.showPopup = true; }, 2500);
             } else if (this.displayMode === 'show_once') {
-                // Mostrar apenas uma vez
-                const popupClosed = localStorage.getItem(this.storageKey);
-                if (!popupClosed) {
-                    setTimeout(() => {
-                        this.showPopup = true;
-                    }, 2500);
+                if (!localStorage.getItem(this.storageKey)) {
+                    setTimeout(() => { this.showPopup = true; }, 2500);
                 }
             }
         },
         
         closePopup() {
             this.showPopup = false;
-            
-            // Se for modo "show_once", salvar que foi fechado
             if (this.displayMode === 'show_once') {
                 localStorage.setItem(this.storageKey, 'true');
             }
@@ -242,21 +239,11 @@ document.addEventListener('alpine:init', () => {
         visible: false,
         
         init() {
-            const handleScroll = () => {
-                this.visible = window.pageYOffset > 300;
-            };
-            
-            window.addEventListener('scroll', handleScroll);
-            
-            // Cleanup no destroy (boa prática)
-            this.$watch('visible', () => {});
+            window.addEventListener('scroll', () => { this.visible = window.pageYOffset > 300; });
         },
         
         scrollToTop() {
-            window.scrollTo({ 
-                top: 0, 
-                behavior: 'smooth' 
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }));
 });
@@ -270,14 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetElement) {
             const elementPosition = targetElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-            window.scrollTo({ 
-                top: offsetPosition, 
-                behavior: 'smooth' 
-            });
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
         }
     };
     
-    // Adicionar listener para todos os links com hash
     document.querySelectorAll('a[href*="#"]:not([href="#"])').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             if (this.pathname === window.location.pathname) {
@@ -287,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Se a página carregou com hash na URL, fazer scroll suave
     if (window.location.hash) {
         setTimeout(() => smoothScrollTo(window.location.hash), 100);
     }

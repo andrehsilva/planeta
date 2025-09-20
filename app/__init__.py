@@ -19,6 +19,8 @@ def create_app(config_class=Config):
     # Carrega a configuração padrão a partir da classe/arquivo config.py
     app.config.from_object(config_class)
 
+    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+
     # CRÍTICO PARA PRODUÇÃO: Sobrescreve a URL do banco de dados se a variável
     # de ambiente 'DATABASE_URL' estiver definida (como no EasyPanel).
     if 'DATABASE_URL' in os.environ:

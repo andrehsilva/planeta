@@ -87,6 +87,23 @@ class PostForm(FlaskForm):
         validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Apenas imagens são permitidas!')]
     )
 
+    # Novo campo para vídeo principal
+    main_video = FileField(
+        'Vídeo Principal', 
+        validators=[FileAllowed(['mp4', 'mov', 'avi', 'webm'], 'Apenas vídeos são permitidos!')]
+    )
+    
+    # Novo campo para vídeos da galeria
+    gallery_videos = MultipleFileField(
+        'Vídeos da Galeria', 
+        validators=[FileAllowed(['mp4', 'mov', 'avi', 'webm'], 'Apenas vídeos são permitidos!')]
+    )
+
+    # --- INÍCIO DA ALTERAÇÃO ---
+    remove_cover_image = BooleanField('Remover imagem de capa atual')
+    remove_main_video = BooleanField('Remover vídeo principal atual')
+    # --- FIM DA ALTERAÇÃO ---
+
     submit = SubmitField('Salvar Postagem')
 
 
@@ -232,23 +249,35 @@ class PopupForm(FlaskForm):
 
 
 
-class HomePageContentForm(FlaskForm):
-    # --- Seção Hero ---
-    show_hero_section = BooleanField('Exibir a seção "Topo da Página"?')
-    hero_background_color_from = StringField('Cor de Início do Degradê (Topo)', description="Use um formato hexadecimal, ex: #4f46e5")
-    hero_background_color_to = StringField('Cor de Fim do Degradê (Topo)', description="Use um formato hexadecimal, ex: #f97316")
-    hero_badge_text = StringField('Texto do Badge de Localização (Topo)')
+
+
+# app/forms.py
+
+# (Mantenha todos os outros imports e formulários que já existem)
+# ...
+
+# --- FORMULÁRIOS DA HOMEPAGE (REATORADOS) ---
+
+class HeroSectionForm(FlaskForm):
+    """Formulário para a seção Hero (Topo da Página)."""
+    show_hero_section = BooleanField('Exibir esta seção?')
+    hero_background_color_from = StringField('Cor de Início do Degradê')
+    hero_background_color_to = StringField('Cor de Fim do Degradê')
+    hero_badge_text = StringField('Texto do Badge de Localização')
     hero_title = StringField('Título Principal')
     hero_subtitle = TextAreaField('Subtítulo')
     hero_whatsapp_button_text = StringField('Texto do Botão WhatsApp')
     hero_whatsapp_button_link = StringField('Link do Botão WhatsApp (wa.me/...)')
     hero_highlight_text = StringField('Texto de Destaque (Espaço Seguro)')
+    submit_hero = SubmitField('Salvar Seção Topo')
 
-    # --- Seção "O que oferecemos" ---
-    show_services_section = BooleanField('Exibir a seção "O que oferecemos"?')
-    services_section_tagline = StringField('Tagline da Seção Serviços (ex: O que oferecemos)')
-    services_section_title = StringField('Título da Seção Serviços')
-    services_section_subtitle = TextAreaField('Subtítulo da Seção Serviços')
+class ServicesSectionForm(FlaskForm):
+    """Formulário para a seção "O que oferecemos"."""
+    show_services_section = BooleanField('Exibir esta seção?')
+    services_section_tagline = StringField('Tagline da Seção')
+    services_section_title = StringField('Título da Seção')
+    services_section_subtitle = TextAreaField('Subtítulo da Seção')
+    # Card 1
     services_card1_icon = StringField('Ícone do Card 1 (emoji 🎂)')
     services_card1_title = StringField('Título do Card 1')
     services_card1_text = TextAreaField('Texto do Card 1')
@@ -257,6 +286,7 @@ class HomePageContentForm(FlaskForm):
     services_card1_item3 = StringField('Item 3 do Card 1')
     services_card1_cta_text = StringField('Texto do Link do Card 1')
     services_card1_cta_link = StringField('Link de Destino do Card 1')
+    # Card 2
     services_card2_icon = StringField('Ícone do Card 2 (emoji 🪪)')
     services_card2_title = StringField('Título do Card 2')
     services_card2_text = TextAreaField('Texto do Card 2')
@@ -265,6 +295,7 @@ class HomePageContentForm(FlaskForm):
     services_card2_item3 = StringField('Item 3 do Card 2')
     services_card2_cta_text = StringField('Texto do Link do Card 2')
     services_card2_cta_link = StringField('Link de Destino do Card 2')
+    # Card 3
     services_card3_icon = StringField('Ícone do Card 3 (emoji 🚀)')
     services_card3_title = StringField('Título do Card 3')
     services_card3_text = TextAreaField('Texto do Card 3')
@@ -273,55 +304,75 @@ class HomePageContentForm(FlaskForm):
     services_card3_item3 = StringField('Item 3 do Card 3')
     services_card3_cta_text = StringField('Texto do Link do Card 3')
     services_card3_cta_link = StringField('Link de Destino do Card 3')
+    submit_services = SubmitField('Salvar Seção "O que oferecemos"')
 
-    # --- Seção "Por que nos escolher" ---
-    show_values_section = BooleanField('Exibir a seção "Por que nos escolher"?')
-    values_section_tagline = StringField('Tagline da Seção Valores')
-    values_section_title = StringField('Título da Seção Valores')
-    values_section_subtitle = TextAreaField('Subtítulo da Seção Valores')
-    values_card1_icon = StringField('Ícone do Card 1 - Valores (emoji ✨)')
-    values_card1_title = StringField('Título do Card 1 - Valores')
-    values_card1_text = TextAreaField('Texto do Card 1 - Valores')
-    values_card2_icon = StringField('Ícone do Card 2 - Valores (emoji 🌠)')
-    values_card2_title = StringField('Título do Card 2 - Valores')
-    values_card2_text = TextAreaField('Texto do Card 2 - Valores')
-    values_card3_icon = StringField('Ícone do Card 3 - Valores (emoji 💖)')
-    values_card3_title = StringField('Título do Card 3 - Valores')
-    values_card3_text = TextAreaField('Texto do Card 3 - Valores')
+class ValuesSectionForm(FlaskForm):
+    """Formulário para a seção "Por que nos escolher"."""
+    show_values_section = BooleanField('Exibir esta seção?')
+    values_section_tagline = StringField('Tagline da Seção')
+    values_section_title = StringField('Título da Seção')
+    values_section_subtitle = TextAreaField('Subtítulo da Seção')
+    values_card1_icon = StringField('Ícone do Card 1 (emoji ✨)')
+    values_card1_title = StringField('Título do Card 1')
+    values_card1_text = TextAreaField('Texto do Card 1')
+    values_card2_icon = StringField('Ícone do Card 2 (emoji 🌠)')
+    values_card2_title = StringField('Título do Card 2')
+    values_card2_text = TextAreaField('Texto do Card 2')
+    values_card3_icon = StringField('Ícone do Card 3 (emoji 💖)')
+    values_card3_title = StringField('Título do Card 3')
+    values_card3_text = TextAreaField('Texto do Card 3')
+    submit_values = SubmitField('Salvar Seção "Por que nos escolher"')
 
-    # --- Seção "Infraestrutura" ---
-    show_structure_section = BooleanField('Exibir a seção "Infraestrutura"?')
-    structure_section_tagline = StringField('Tagline da Seção Estrutura')
-    structure_section_title = StringField('Título da Seção Estrutura')
-    structure_section_subtitle = TextAreaField('Subtítulo da Seção Estrutura')
+class StructureSectionForm(FlaskForm):
+    """Formulário para a seção "Infraestrutura"."""
+    show_structure_section = BooleanField('Exibir esta seção?')
+    structure_section_tagline = StringField('Tagline da Seção')
+    structure_section_title = StringField('Título da Seção')
+    structure_section_subtitle = TextAreaField('Subtítulo da Seção')
     structure_feature1_title = StringField('Destaque 1: Título')
     structure_feature1_text = TextAreaField('Destaque 1: Texto')
     structure_feature2_title = StringField('Destaque 2: Título')
     structure_feature2_text = TextAreaField('Destaque 2: Texto')
-    gallery_images = MultipleFileField(
-        'Adicionar novas imagens à galeria da Estrutura', 
-        validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Apenas imagens são permitidas!')]
-    )
+    gallery_images = MultipleFileField('Adicionar novas imagens à galeria', 
+        validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Apenas imagens!')])
+    submit_structure = SubmitField('Salvar Seção "Infraestrutura"')
 
-    # --- Seção "Diário de bordo" ---
-    show_blog_section = BooleanField('Exibir a seção "Diário de bordo"?')
-    blog_section_tagline = StringField('Tagline da Seção Blog')
-    blog_section_title = StringField('Título da Seção Blog')
-    blog_section_subtitle = TextAreaField('Subtítulo da Seção Blog')
+class VideosSectionForm(FlaskForm):
+    """Formulário para a seção "Nossos Vídeos"."""
+    show_videos_section = BooleanField('Exibir esta seção?')
+    videos_section_title = StringField('Título da Seção')
+    videos_section_video1 = FileField('Vídeo 1', validators=[Optional(), FileAllowed(['mp4', 'mov', 'avi', 'webm'])])
+    videos_section_video2 = FileField('Vídeo 2', validators=[Optional(), FileAllowed(['mp4', 'mov', 'avi', 'webm'])])
+    videos_section_video3 = FileField('Vídeo 3', validators=[Optional(), FileAllowed(['mp4', 'mov', 'avi', 'webm'])])
+    remove_videos_section_video1 = BooleanField('Remover Vídeo 1 atual')
+    remove_videos_section_video2 = BooleanField('Remover Vídeo 2 atual')
+    remove_videos_section_video3 = BooleanField('Remover Vídeo 3 atual')
+    submit_videos = SubmitField('Salvar Seção "Nossos Vídeos"')
+
+class BlogSectionForm(FlaskForm):
+    """Formulário para a seção "Diário de bordo" (Blog)."""
+    show_blog_section = BooleanField('Exibir esta seção?')
+    blog_section_tagline = StringField('Tagline da Seção')
+    blog_section_title = StringField('Título da Seção')
+    blog_section_subtitle = TextAreaField('Subtítulo da Seção')
     blog_cta_text = StringField('Texto do Link "Ver todas"')
+    submit_blog = SubmitField('Salvar Seção Blog')
     
-    # --- Seção CTA Final ---
-    show_cta_section = BooleanField('Exibir a seção "Chamada Final"?')
+class CtaSectionForm(FlaskForm):
+    """Formulário para a seção "CTA Final"."""
+    show_cta_section = BooleanField('Exibir esta seção?')
     cta_title = StringField('Título do CTA Final')
     cta_subtitle = TextAreaField('Subtítulo do CTA Final')
-    cta_whatsapp_button_text = StringField('Texto do Botão WhatsApp (CTA Final)')
-    cta_form_button_text = StringField('Texto do Botão Formulário (CTA Final)')
-    
-    # --- Seção "Localização" ---
-    show_location_section = BooleanField('Exibir a seção "Localização"?')
-    location_section_tagline = StringField('Tagline da Seção Localização')
-    location_section_title = StringField('Título da Seção Localização')
-    location_section_subtitle = TextAreaField('Subtítulo da Seção Localização')
+    cta_whatsapp_button_text = StringField('Texto do Botão WhatsApp')
+    cta_form_button_text = StringField('Texto do Botão Formulário')
+    submit_cta = SubmitField('Salvar Seção CTA')
+
+class LocationSectionForm(FlaskForm):
+    """Formulário para a seção "Localização"."""
+    show_location_section = BooleanField('Exibir esta seção?')
+    location_section_tagline = StringField('Tagline da Seção')
+    location_section_title = StringField('Título da Seção')
+    location_section_subtitle = TextAreaField('Subtítulo da Seção')
     location_card_title = StringField('Título do Card de Contato')
     location_address_title = StringField('Rótulo do Endereço')
     location_address_text = TextAreaField('Texto do Endereço')
@@ -332,5 +383,11 @@ class HomePageContentForm(FlaskForm):
     location_gmaps_button_text = StringField('Texto do Botão Google Maps')
     location_gmaps_link = StringField('Link do Google Maps')
     location_image_alt = StringField('Texto Alternativo (alt) da Imagem do Mapa')
+    submit_location = SubmitField('Salvar Seção Localização')
 
-    submit = SubmitField('Salvar Conteúdo da Homepage')
+# Nota: O formulário de ordem das seções será um formulário HTML simples,
+# não precisando de uma classe WTForms.
+
+class SectionOrderForm(FlaskForm):
+    """Formulário vazio, usado apenas para gerar o CSRF token para a reordenação."""
+    pass

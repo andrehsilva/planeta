@@ -10,11 +10,17 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       {% for post in latest_posts %}
       <article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="block overflow-hidden">
+        
+        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="block h-48 overflow-hidden">
           {% if post.cover_image and post.cover_image != 'default.jpg' %}
-          <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+            <img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+          {% elif post.video_filename %}
+            <video class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" autoplay muted loop preload="metadata">
+                <source src="{{ url_for('static', filename='uploads/' + post.video_filename) }}#t=1" type="video/mp4">
+                Seu navegador não suporta vídeos.
+            </video>
           {% else %}
-          <div class="w-full h-48 bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center"></div>
+            <div class="w-full h-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center"></div>
           {% endif %}
         </a>
         <div class="p-6">

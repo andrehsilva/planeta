@@ -5,6 +5,7 @@
 
 <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
     <form method="POST" action="" enctype="multipart/form-data" id="post-form">
+        {# ... (campos title, content, categories) ... #}
         {{ form.hidden_tag() }}
         <div class="space-y-8">
             <div>
@@ -25,31 +26,59 @@
                 <p class="mt-2 text-xs text-gray-500">Comece a digitar para pesquisar ou adicionar categorias.</p>
             </div>
 
+
             <div class="space-y-8">
+                <div class="border-t pt-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Vídeo Principal</h3>
+                    {% if post and post.video_filename %}
+                    <div class="mb-4">
+                        <p class="block text-sm font-medium text-gray-700">Vídeo Atual:</p>
+                        <video controls class="mt-2 rounded-lg max-w-full max-h-64 shadow-sm">
+                            <source src="{{ url_for('static', filename='uploads/' + post.video_filename) }}" type="video/mp4">
+                            Seu navegador não suporta o elemento de vídeo.
+                        </video>
+                        <div class="mt-4 flex items-center">
+                            {{ form.remove_main_video(class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500") }}
+                            {{ form.remove_main_video.label(class="ml-2 block text-sm font-medium text-gray-800") }}
+                        </div>
+                        </div>
+                    {% endif %}
+                    {{ form.main_video.label(class="block text-sm font-medium text-gray-700") }}
+                    <p class="text-xs text-gray-500 mb-2">Formatos permitidos: MP4, MOV, AVI, WEBM. Envie um novo para substituir o atual.</p>
+                    {{ form.main_video(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
+                </div>
+
                 <div class="border-t pt-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Imagem de Capa</h3>
                     {% if post and post.cover_image and post.cover_image != 'default.jpg' %}
                     <div class="mb-4">
                         <p class="block text-sm font-medium text-gray-700">Capa Atual:</p>
                         <img src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="Imagem de capa atual" class="mt-2 rounded-lg max-h-48 shadow-sm">
-                    </div>
+                        <div class="mt-4 flex items-center">
+                            {{ form.remove_cover_image(class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500") }}
+                            {{ form.remove_cover_image.label(class="ml-2 block text-sm font-medium text-gray-800") }}
+                        </div>
+                        </div>
                     {% endif %}
                     {{ form.cover_image.label(class="block text-sm font-medium text-gray-700") }}
                     <p class="text-xs text-gray-500 mb-2">Envie uma nova imagem para substituir a atual.</p>
                     {{ form.cover_image(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
                 </div>
 
+                <!-- Seção de Galeria de Imagens -->
                 <div class="border-t pt-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Galeria de Imagens</h3>
                     {% if post and post.gallery_images %}
                     <div class="mb-4">
-                        <p class="block text-sm font-medium text-gray-700 mb-2">Galeria Atual:</p>
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Imagens da Galeria:</p>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             {% for image in post.gallery_images %}
                             <div class="relative group">
                                 <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.caption or 'Imagem da galeria' }}" class="rounded-lg shadow-sm w-full h-24 object-cover">
                                 <button type="button" @click="deleteUrl = '{{ url_for('dashboard.delete_image', image_id=image.id) }}'; deleteModalOpen = true" class="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
                                 </button>
                             </div>
                             {% endfor %}
@@ -59,6 +88,37 @@
                     {{ form.gallery_images.label(class="block text-sm font-medium text-gray-700") }}
                     <p class="text-xs text-gray-500 mb-2">Envie novas imagens para adicionar à galeria.</p>
                     {{ form.gallery_images(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
+                </div>
+
+                <!-- Seção de Galeria de Vídeos -->
+                <div class="border-t pt-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Galeria de Vídeos</h3>
+                    {% if post and post.gallery_videos %}
+                    <div class="mb-4">
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Vídeos da Galeria:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {% for video in post.gallery_videos %}
+                            <div class="relative group border rounded-lg p-2">
+                                <video controls class="w-full rounded-lg">
+                                    <source src="{{ url_for('static', filename='uploads/' + video.filename) }}" type="video/mp4">
+                                    Seu navegador não suporta o elemento de vídeo.
+                                </video>
+                                <button type="button" @click="deleteUrl = '{{ url_for('dashboard.delete_video', video_id=video.id) }}'; deleteModalOpen = true" class="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                                {% if video.caption %}
+                                <p class="text-sm text-gray-600 mt-2 text-center">{{ video.caption }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {{ form.gallery_videos.label(class="block text-sm font-medium text-gray-700") }}
+                    <p class="text-xs text-gray-500 mb-2">Formatos permitidos: MP4, MOV, AVI, WEBM</p>
+                    {{ form.gallery_videos(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
                 </div>
             </div>
 
@@ -75,7 +135,7 @@
             </div>
             
             <div class="flex justify-end space-x-4 pt-4">
-                <a href="{{ url_for('dashboard.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                <a href="{{ url_for('dashboard.list_posts') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
                     Cancelar
                 </a>
                 {{ form.submit(class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 cursor-pointer") }}
@@ -86,14 +146,44 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new TomSelect('#select-categories',{ plugins: ['remove_button'], create: false, placeholder: 'Selecione uma ou mais categorias' });
-        const quill = new Quill('#quill-editor', { theme: 'snow', modules: { toolbar: [[{ 'header': [1, 2, 3, false] }],['bold', 'italic', 'underline', 'strike'],[{ 'list': 'ordered'}, { 'list': 'bullet' }],['link', 'image'],['clean']]}});
+        // Inicializar TomSelect para categorias
+        new TomSelect('#select-categories', { 
+            plugins: ['remove_button'], 
+            create: false, 
+            placeholder: 'Selecione uma ou mais categorias' 
+        });
+        
+        // Inicializar Quill Editor
+        const quill = new Quill('#quill-editor', { 
+            theme: 'snow', 
+            modules: { 
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ] 
+            }
+        });
+        
+        // Carregar conteúdo inicial se existir
         const contentInput = document.querySelector('textarea[name="content"]');
         const initialContent = document.querySelector('#initial-content').innerHTML;
-        if (initialContent) { quill.root.innerHTML = initialContent.trim(); }
-        quill.on('text-change', function() { contentInput.value = quill.root.innerHTML; });
+        if (initialContent) { 
+            quill.root.innerHTML = initialContent.trim(); 
+        }
+        
+        // Atualizar o campo hidden com o conteúdo do editor
+        quill.on('text-change', function() { 
+            contentInput.value = quill.root.innerHTML; 
+        });
+        
+        // Garantir que o conteúdo seja enviado no submit
         const form = document.querySelector('#post-form');
-        form.addEventListener('submit', function() { contentInput.value = quill.root.innerHTML; });
+        form.addEventListener('submit', function() { 
+            contentInput.value = quill.root.innerHTML; 
+        });
     });
 </script>
 {% endblock %}

@@ -53,6 +53,11 @@ class Post(db.Model):
     cover_image = db.Column(db.String(100), nullable=True, default='default.jpg') # Armazena o nome do arquivo da imagem
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     author = db.relationship('User', backref='posts')
+
+    video_filename = db.Column(db.String(100), nullable=True)
+    
+    # Relação com Vídeos da Galeria (Um-para-Muitos)
+    gallery_videos = db.relationship('Video', backref='post', lazy=True, cascade="all, delete-orphan")
     
     # Relação com Categorias (Muitos-para-Muitos)
     categories = db.relationship('Category', secondary=post_categories, lazy='subquery',
@@ -246,8 +251,8 @@ class HomePageContent(db.Model):
     section_order = db.Column(
         db.Text,
         nullable=False,
-        default='hero,services,values,structure,blog,cta,location',
-        server_default='hero,services,values,structure,blog,cta,location'
+        default='hero,services,values,structure,videos,blog,cta,location',
+        server_default='hero,services,values,structure,videos,blog,cta,location'
     )
     
     # --- Seção Hero ---
@@ -316,6 +321,7 @@ class HomePageContent(db.Model):
     structure_feature2_title = db.Column(db.String(100))
     structure_feature2_text = db.Column(db.Text)
     structure_images = db.relationship('StructureImage', backref='homepage', lazy=True, cascade="all, delete-orphan")
+    structure_videos = db.relationship('StructureVideo', backref='homepage', lazy=True, cascade="all, delete-orphan")
 
     # --- Seção "Diário de bordo" (Blog) ---
     show_blog_section = db.Column(db.Boolean, default=True)
@@ -347,12 +353,29 @@ class HomePageContent(db.Model):
     location_gmaps_link = db.Column(db.String(255))
     location_image_alt = db.Column(db.String(200))
 
+    # --- Seção "Nossos Vídeos" (NOVA SEÇÃO) ---
+    show_videos_section = db.Column(db.Boolean, default=True)
+    videos_section_title = db.Column(db.String(200))
+    videos_section_video1 = db.Column(db.String(100), nullable=True)
+    videos_section_video2 = db.Column(db.String(100), nullable=True)
+    videos_section_video3 = db.Column(db.String(100), nullable=True)
+
 class StructureImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
     caption = db.Column(db.String(100), nullable=False) # Ex: 'Campo de Futebol'
     homepage_content_id = db.Column(db.Integer, db.ForeignKey('home_page_content.id'), nullable=False)
 
+
+class StructureVideo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    caption = db.Column(db.String(100), nullable=False)
+    homepage_content_id = db.Column(db.Integer, db.ForeignKey('home_page_content.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<StructureVideo {self.filename}>'
 
 # app/models.py
 
@@ -380,3 +403,14 @@ class Popup(db.Model):
 
     def __repr__(self):
         return f'<Popup {self.title}>'
+    
+
+# Novo modelo para vídeos da galeria de posts
+class Video(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    caption = db.Column(db.String(200), nullable=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
