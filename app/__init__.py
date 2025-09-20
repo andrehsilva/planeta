@@ -68,5 +68,11 @@ def create_app(config_class=Config):
         def load_user(user_id):
             """Diz ao Flask-Login como carregar um usuário a partir de um ID."""
             return models.User.query.get(int(user_id))
+        
+    with app.app_context():
+        upload_path = app.config['UPLOAD_FOLDER']
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path)
+            print(f"Pasta de uploads criada com sucesso em: {upload_path}")
 
     return app

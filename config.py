@@ -10,3 +10,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # --- NOVA CONFIGURAÇÃO ---
     UPLOAD_FOLDER = os.path.join(basedir, 'app/static/uploads')
+    
