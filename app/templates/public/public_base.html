@@ -45,8 +45,8 @@
       </div>
       <div class="flex items-center space-x-4">
         <div class="hidden sm:flex items-center space-x-4">
-          <a href="{{ site_settings.instagram_link or '#' }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Instagram"><i class="fab fa-instagram text-xl"></i></a>
-          <a href="{{ site_settings.facebook_link or '#' }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f text-xl"></i></a>
+          <a href="{{ site_settings.footer_instagram_link or '#' }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Instagram"><i class="fab fa-instagram text-xl"></i></a>
+          <a href="{{ site_settings.footer_facebook_link or '#' }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f text-xl"></i></a>
           
           
           {% if current_user.is_authenticated %}
