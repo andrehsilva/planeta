@@ -108,16 +108,18 @@ def add_post():
         db.session.add(new_post)
         
         # Adiciona imagens da galeria
-        for image_file in form.gallery_images.data:
-            if isinstance(image_file, FileStorage):
-                new_image = Image(filename=save_picture(image_file), post=new_post)
-                db.session.add(new_image)
+        if form.gallery_images.data:  # <-- ADICIONE ESTA LINHA
+            for image_file in form.gallery_images.data:
+                if isinstance(image_file, FileStorage):
+                    new_image = Image(filename=save_picture(image_file), post=new_post)
+                    db.session.add(new_image)
         
         # Adiciona vídeos da galeria
-        for video_file in form.gallery_videos.data:
-            if isinstance(video_file, FileStorage):
-                new_video = Video(filename=save_video(video_file), post=new_post)
-                db.session.add(new_video)
+        if form.gallery_videos.data:  # <-- ADICIONE ESTA LINHA
+            for video_file in form.gallery_videos.data:
+                if isinstance(video_file, FileStorage):
+                    new_video = Video(filename=save_video(video_file), post=new_post)
+                    db.session.add(new_video)
 
         db.session.commit()
         flash('Postagem criada com sucesso!', 'success')
@@ -156,14 +158,18 @@ def edit_post(post_id):
         post.meta_description = form.meta_description.data
         post.is_published = form.is_published.data
         
+        # CÓDIGO CORRIGIDO para edit_post
+
         # Adiciona novas imagens/vídeos à galeria (não remove os existentes)
-        for image_file in form.gallery_images.data:
-            if isinstance(image_file, FileStorage):
-                db.session.add(Image(filename=save_picture(image_file), post=post))
+        if form.gallery_images.data:  # <-- ADICIONE ESTA LINHA
+            for image_file in form.gallery_images.data:
+                if isinstance(image_file, FileStorage):
+                    db.session.add(Image(filename=save_picture(image_file), post=post))
         
-        for video_file in form.gallery_videos.data:
-            if isinstance(video_file, FileStorage):
-                db.session.add(Video(filename=save_video(video_file), post=post))
+        if form.gallery_videos.data:  # <-- ADICIONE ESTA LINHA
+            for video_file in form.gallery_videos.data:
+                if isinstance(video_file, FileStorage):
+                    db.session.add(Video(filename=save_video(video_file), post=post))
 
         db.session.commit()
         flash('Postagem atualizada com sucesso!', 'success')
