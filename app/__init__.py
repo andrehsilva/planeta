@@ -1,4 +1,3 @@
-# app/__init__.py
 import os
 from flask import Flask
 from markupsafe import Markup
@@ -6,43 +5,44 @@ from . import commands
 
 # Importando as extensões que serão inicializadas
 from .extensions import db, migrate, login_manager
-from config import Config
+# --- ALTERADO ---
+# Importa o dicionário de configurações em vez de uma única classe
+from config import config_by_name
 
-def create_app(config_class=Config):
+def create_app(config_name=None):
     """
     Fábrica de aplicativos (Application Factory).
     Cria e configura uma instância da aplicação Flask.
     """
     app = Flask(__name__, instance_relative_config=True)
 
-    # 1. CARREGAR A CONFIGURAÇÃO
-    # Carrega a configuração padrão a partir da classe/arquivo config.py
-    app.config.from_object(config_class)
+    # --- LÓGICA DE CONFIGURAÇÃO MELHORADA ---
+    # 1. Determina qual configuração carregar (development ou production)
+    #    com base na variável de ambiente FLASK_ENV.
+    if config_name is None:
+        config_name = os.getenv('FLASK_ENV', 'default')
 
+    # 2. Carrega a configuração do objeto correspondente.
+    app.config.from_object(config_by_name[config_name])
+
+    # Configurações adicionais
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
-    # CRÍTICO PARA PRODUÇÃO: Sobrescreve a URL do banco de dados se a variável
-    # de ambiente 'DATABASE_URL' estiver definida (como no EasyPanel).
-    if 'DATABASE_URL' in os.environ:
-        db_url = os.environ['DATABASE_URL']
-        # Garante a compatibilidade com o SQLAlchemy
-        if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
-        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    # --- REMOVIDO ---
+    # A lógica de sobrescrever o DATABASE_URL foi movida para o arquivo
+    # config.py, dentro da classe ProductionConfig, tornando este
+    # arquivo mais limpo e a configuração mais centralizada.
 
-    # 2. INICIALIZAR AS EXTENSÕES
+    # INICIALIZAÇÃO DAS EXTENSÕES
     # Conecta as extensões à instância do nosso aplicativo
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    
-    # ✅ CORREÇÃO APLICADA AQUI
-    # Esta única linha registra todos os comandos definidos em commands.py
+
+    # Registra os comandos customizados (ex: flask create-admin)
     commands.register_commands(app)
 
-
-    # 3. REGISTRAR BLUEPRINTS E OUTROS COMPONENTES DO APP
-    # O 'with app.app_context()' garante que tudo aqui dentro "enxergue" o app.
+    # REGISTRO DE BLUEPRINTS E OUTROS COMPONENTES DO APP
     with app.app_context():
         # Importar os modelos aqui garante que eles sejam reconhecidos pelo Flask-Migrate
         from . import models
@@ -57,7 +57,7 @@ def create_app(config_class=Config):
         from .dashboard import bp as dashboard_bp
         app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 
-        # Registrar o filtro Jinja de forma mais moderna
+        # Registrar o filtro Jinja
         @app.template_filter('nl2br')
         def nl2br_filter(s):
             """Converte quebras de linha em tags <br>."""
@@ -68,11 +68,17 @@ def create_app(config_class=Config):
         def load_user(user_id):
             """Diz ao Flask-Login como carregar um usuário a partir de um ID."""
             return models.User.query.get(int(user_id))
-        
+
+    # CRIA A PASTA DE UPLOADS SE ELA NÃO EXISTIR
+    # Este código agora funciona para ambos os ambientes, pois app.config['UPLOAD_FOLDER']
+    # terá o valor correto (relativo ou absoluto) dependendo do FLASK_ENV.
     with app.app_context():
-        upload_path = app.config['UPLOAD_FOLDER']
-        if not os.path.exists(upload_path):
-            os.makedirs(upload_path)
-            print(f"Pasta de uploads criada com sucesso em: {upload_path}")
+        upload_path = app.config.get('UPLOAD_FOLDER')
+        if upload_path and not os.path.exists(upload_path):
+            try:
+                os.makedirs(upload_path)
+                print(f"Pasta de uploads criada com sucesso em: {upload_path}")
+            except Exception as e:
+                print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
     return app
