@@ -156,13 +156,15 @@ def update_structure_section():
         content.structure_feature2_title = form.structure_feature2_title.data
         content.structure_feature2_text = form.structure_feature2_text.data
 
-        # 2. Processa os uploads da galeria de imagens
-        for image_file in form.gallery_images.data:
-            if image_file:
-                filename = save_picture(image_file)
-                caption = os.path.splitext(image_file.filename)[0].replace('_', ' ').title()
-                new_image = StructureImage(filename=filename, caption=caption, homepage_content_id=content.id)
-                db.session.add(new_image)
+        # Adicionamos uma verificação para garantir que há dados antes de iterar
+        if form.gallery_images.data:
+            for image_file in form.gallery_images.data:
+                if image_file:
+                    filename = save_picture(image_file)
+                    # Usa o nome do arquivo original (sem extensão) como legenda padrão
+                    caption = os.path.splitext(image_file.filename)[0].replace('_', ' ').title()
+                    new_image = StructureImage(filename=filename, caption=caption, homepage_content_id=content.id)
+                    db.session.add(new_image)
         
         
 
