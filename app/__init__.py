@@ -83,6 +83,10 @@ def create_app(config_name=None):
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
     # A linha correta, com o parâmetro 'prefix'
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
+    
+    
+    #app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
+
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/', prefix='static/')
 
     return app
