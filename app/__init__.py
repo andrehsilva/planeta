@@ -85,8 +85,7 @@ def create_app(config_name=None):
     # A linha correta, com o parâmetro 'prefix'
     
     
-    #app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
 
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/', prefix='static/')
-
+    
     return app
