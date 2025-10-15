@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from markupsafe import Markup
 from . import commands
+from whitenoise import WhiteNoise
 
 # Importando as extensões que serão inicializadas
 from .extensions import db, migrate, login_manager
@@ -80,5 +81,8 @@ def create_app(config_name=None):
                 print(f"Pasta de uploads criada com sucesso em: {upload_path}")
             except Exception as e:
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
+
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/') # <--- 2. ADICIONE ESTA LINHA
+
 
     return app
