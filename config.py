@@ -26,7 +26,9 @@ class ProductionConfig(Config):
     DEBUG = False
     # O DATABASE_URL será pego da variável de ambiente no EasyPanel
     # Usa o caminho absoluto para a pasta de uploads, que funciona no Docker
-    UPLOAD_FOLDER = '/app/static/uploads'
+    #UPLOAD_FOLDER = '/app/static/uploads'
+    UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
+
 
 # Dicionário para facilitar a seleção da configuração
 config_by_name = {
