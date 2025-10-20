@@ -1,8 +1,11 @@
+# app/__init__.py
+# --- VERSÃO FINAL E CORRIGIDA ---
+
 import os
 from flask import Flask
 from markupsafe import Markup
 from . import commands
-from whitenoise import WhiteNoise  # 1. Importe o WhiteNoise
+from whitenoise import WhiteNoise  # 1. Importar o WhiteNoise
 
 # Importando as extensões que serão inicializadas
 from .extensions import db, migrate, login_manager
@@ -14,12 +17,16 @@ def create_app(config_name=None):
     Cria e configura uma instância da aplicação Flask.
     """
     
-    # 2. ESTA É A CORREÇÃO PRINCIPAL PARA O FLASK:
-    # Diz ao Flask que a pasta 'static' está um nível ACIMA
-    # deste arquivo (ou seja, em /app/static/ e não em /app/app/static/)
+    # 2. ESTA É A CORREÇÃO PRINCIPAL E DEFINITIVA:
+    # Vamos calcular o caminho absoluto para a pasta /app
+    # O basedir será /app
+    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    
+    # Agora dizemos ao Flask para usar o caminho absoluto /app/static
+    # como sua pasta de arquivos estáticos.
     app = Flask(__name__,
                 instance_relative_config=True,
-                static_folder='../static',
+                static_folder=os.path.join(basedir, 'static'),
                 static_url_path='/static')
 
     # --- LÓGICA DE CONFIGURAÇÃO ---
@@ -49,19 +56,15 @@ def create_app(config_name=None):
         from .dashboard import bp as dashboard_bp
         app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 
-        # Registrar o filtro Jinja
         @app.template_filter('nl2br')
         def nl2br_filter(s):
-            """Converte quebras de linha em tags <br>."""
             return Markup(s.replace('\n', '<br>')) if s else ''
 
-        # Configurar o user_loader do Flask-Login
         @login_manager.user_loader
         def load_user(user_id):
-            """Diz ao Flask-Login como carregar um usuário a partir de um ID."""
             return models.User.query.get(int(user_id))
 
-    # CRIA A PASTA DE UPLOADS SE ELA NÃO EXISTIR
+    # CRIA A PASTA DE UPLOADS (Ainda usa a config absoluta)
     with app.app_context():
         upload_path = app.config.get('UPLOAD_FOLDER')
         if upload_path and not os.path.exists(upload_path):
@@ -71,9 +74,9 @@ def create_app(config_name=None):
             except Exception as e:
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
-    # 3. ESTA É A CORREÇÃO DO WHITENOISE:
+    # 3. CONFIGURAÇÃO FINAL DO WHITENOISE:
     # Esta linha simples faz o WhiteNoise ler automaticamente
-    # a configuração correta que definimos acima no Flask.
+    # a configuração 'static_folder' correta que definimos acima.
     app.wsgi_app = WhiteNoise(app.wsgi_app)
     
     return app
