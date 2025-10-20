@@ -15,8 +15,7 @@ def create_app(config_name=None):
     """
     Fábrica de aplicativos (Application Factory).
     """
-    
-    # Define o app de forma simples. WhiteNoise cuidará dos caminhos.
+    # Define o app de forma simples. A estrutura de ficheiros foi corrigida no Dockerfile.
     app = Flask(__name__, instance_relative_config=True)
 
     # --- LÓGICA DE CONFIGURAÇÃO ---
@@ -36,13 +35,10 @@ def create_app(config_name=None):
     # --- REGISTRO DE BLUEPRINTS E OUTROS COMPONENTES ---
     with app.app_context():
         from . import models
-
         from .main import bp as main_bp
         app.register_blueprint(main_bp)
-
         from .auth import bp as auth_bp
         app.register_blueprint(auth_bp, url_prefix='/auth')
-
         from .dashboard import bp as dashboard_bp
         app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 
@@ -54,7 +50,7 @@ def create_app(config_name=None):
         def load_user(user_id):
             return models.User.query.get(int(user_id))
 
-    # CRIA A PASTA DE UPLOADS (Ainda usa a config absoluta)
+    # Cria a pasta de uploads (dentro do volume) se ela não existir
     with app.app_context():
         upload_path = app.config.get('UPLOAD_FOLDER')
         if upload_path and not os.path.exists(upload_path):
@@ -65,8 +61,9 @@ def create_app(config_name=None):
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
     # CONFIGURAÇÃO FINAL DO WHITENOISE:
-    # A configuração mais robusta, que não entra em conflito com o Docker.
-    # Ela serve TUDO que estiver na pasta /app/static/
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/')
+    # Esta regra mapeia a URL /static/... para a pasta física /app/static/...
+    # Agora funcionará porque o Dockerfile copiou a pasta.
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
     
     return app
+
