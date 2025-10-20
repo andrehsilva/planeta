@@ -20,14 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- CORREÇÃO PRINCIPAL ---
-# Passo 6: Copiar explicitamente os ficheiros e pastas da aplicação.
-# Isto garante que a pasta 'static' (com 'images') seja incluída.
-COPY app ./app
-COPY static ./static
-COPY config.py .
-COPY migrations ./migrations
-COPY pyproject.toml .
+# Passo 6: Copiar o Código da Aplicação
+# Com as dependências já instaladas, agora copiamos o resto do nosso código.
+# Isto irá funcionar assim que a pasta 'static' estiver no seu repositório.
+COPY . .
 
 # Passo 7: Expor a Porta
 EXPOSE $PORT
