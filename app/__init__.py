@@ -15,7 +15,7 @@ def create_app(config_name=None):
     Fábrica de aplicativos (Application Factory).
     Cria e configura uma instância da aplicação Flask.
     """
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True, static_folder='../static')
 
     # --- LÓGICA DE CONFIGURAÇÃO MELHORADA ---
     # 1. Determina qual configuração carregar (development ou production)
