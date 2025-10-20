@@ -21,20 +21,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Passo 6: Copiar o Código da Aplicação
-# ESTA É A CORREÇÃO CRÍTICA:
-# Copiamos a pasta 'app' e os arquivos de configuração PRIMEIRO.
-COPY app ./app
-COPY migrations ./migrations
-COPY config.py .
-COPY app.db . 
-# ... adicione outros arquivos da raiz do seu projeto aqui se necessário
-
-# DEPOIS, copiamos a pasta 'static'. Isso garante que ela não seja
-# sobrescrita pela montagem do volume que acontece depois.
-COPY static ./static
+# Copia TUDO (incluindo a pasta 'static' com 'images') para o contentor.
+COPY . .
 
 # Passo 7: Expor a Porta
 EXPOSE $PORT
 
 # Passo 8: Comando de Execução
 CMD gunicorn --bind 0.0.0.0:$PORT "app:create_app()"
+

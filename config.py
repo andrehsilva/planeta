@@ -1,4 +1,4 @@
-# config.py
+""" # config.py
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -31,6 +31,41 @@ class ProductionConfig(Config):
 
 
 # Dicionário para facilitar a seleção da configuração
+config_by_name = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+} """
+
+
+# config.py
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# --- CLASSE BASE ---
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'uma-chave-secreta-muito-dificil-de-adivinhar'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    UPLOAD_FOLDER = None
+
+# --- CONFIGURAÇÃO DE DESENVOLVIMENTO ---
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'app.db')
+    # Para desenvolvimento, podemos usar uma subpasta em 'static'
+    UPLOAD_FOLDER = os.path.join(basedir, 'app/static/uploads')
+
+# --- CONFIGURAÇÃO DE PRODUÇÃO ---
+class ProductionConfig(Config):
+    DEBUG = False
+    # ESTA É A MUDANÇA CRÍTICA:
+    # A pasta de uploads agora é /app/media, separada da pasta /app/static.
+    UPLOAD_FOLDER = '/app/media'
+
+# Dicionário para facilitar a seleção
 config_by_name = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
