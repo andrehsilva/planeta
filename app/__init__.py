@@ -15,7 +15,11 @@ def create_app(config_name=None):
     Fábrica de aplicativos (Application Factory).
     Cria e configura uma instância da aplicação Flask.
     """
-    app = Flask(__name__, instance_relative_config=True, static_folder='../static')
+    app = Flask(__name__,
+            instance_relative_config=True,
+            static_folder='../static',  # O caminho físico (um nível acima e_
+                                      # dentro de 'static')
+            static_url_path='/static') # A URL que o url_for deve gerar
 
     # --- LÓGICA DE CONFIGURAÇÃO MELHORADA ---
     # 1. Determina qual configuração carregar (development ou production)
@@ -85,7 +89,8 @@ def create_app(config_name=None):
     # A linha correta, com o parâmetro 'prefix'
     
     
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
+    #app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
 
     
     return app
