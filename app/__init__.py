@@ -5,7 +5,7 @@ import os
 from flask import Flask
 from markupsafe import Markup
 from . import commands
-from whitenoise import WhiteNoise  # 1. Importar o WhiteNoise
+from whitenoise import WhiteNoise
 
 # Importando as extensões que serão inicializadas
 from .extensions import db, migrate, login_manager
@@ -14,20 +14,10 @@ from config import config_by_name
 def create_app(config_name=None):
     """
     Fábrica de aplicativos (Application Factory).
-    Cria e configura uma instância da aplicação Flask.
     """
     
-    # 2. ESTA É A CORREÇÃO PRINCIPAL E DEFINITIVA:
-    # Vamos calcular o caminho absoluto para a pasta /app
-    # O basedir será /app
-    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    
-    # Agora dizemos ao Flask para usar o caminho absoluto /app/static
-    # como sua pasta de arquivos estáticos.
-    app = Flask(__name__,
-                instance_relative_config=True,
-                static_folder=os.path.join(basedir, 'static'),
-                static_url_path='/static')
+    # Define o app de forma simples. WhiteNoise cuidará dos caminhos.
+    app = Flask(__name__, instance_relative_config=True)
 
     # --- LÓGICA DE CONFIGURAÇÃO ---
     if config_name is None:
@@ -74,9 +64,9 @@ def create_app(config_name=None):
             except Exception as e:
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
-    # 3. CONFIGURAÇÃO FINAL DO WHITENOISE:
-    # Esta linha simples faz o WhiteNoise ler automaticamente
-    # a configuração 'static_folder' correta que definimos acima.
-    app.wsgi_app = WhiteNoise(app.wsgi_app)
+    # CONFIGURAÇÃO FINAL DO WHITENOISE:
+    # A configuração mais robusta, que não entra em conflito com o Docker.
+    # Ela serve TUDO que estiver na pasta /app/static/
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/')
     
     return app
