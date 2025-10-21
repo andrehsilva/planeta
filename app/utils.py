@@ -20,23 +20,24 @@ def delete_file_from_uploads(filename):
         print(f"Erro ao deletar o arquivo {filename}: {e}")
 
 def save_picture(form_picture_data):
-    """
-    Salva uma imagem do formulário na pasta UPLOAD_FOLDER
-    e retorna o nome do arquivo.
-    """
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture_data.filename)
     picture_fn = random_hex + f_ext
 
-    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
     upload_folder = current_app.config['UPLOAD_FOLDER']
     picture_path = os.path.join(upload_folder, picture_fn)
 
-    # Garante que a pasta existe (o Dockerfile já faz isso,
-    # mas é uma boa garantia)
+    # LOG para debug
+    print(f"📁 SALVANDO IMAGEM EM: {picture_path}")
+    print(f"📁 UPLOAD_FOLDER configurado: {upload_folder}")
+    print(f"📁 Pasta existe? {os.path.exists(upload_folder)}")
+    
     os.makedirs(upload_folder, exist_ok=True)
-
     form_picture_data.save(picture_path)
+    
+    # Verifica se foi salvo
+    print(f"✅ Imagem salva? {os.path.exists(picture_path)}")
+    
     return picture_fn
 
 def save_video(form_video_data):
@@ -55,3 +56,17 @@ def save_video(form_video_data):
     
     form_video_data.save(video_path)
     return video_name
+
+def get_media_url(filename):
+    """
+    Retorna a URL correta para um arquivo de mídia baseado no ambiente
+    """
+    if not filename:
+        return ""
+    
+    # Em desenvolvimento, usa o caminho static/uploads
+    if current_app.config.get('DEBUG'):
+        return url_for('static', filename=f'uploads/{filename}')
+    # Em produção, usa o caminho /media/
+    else:
+        return f"/media/{filename}"
