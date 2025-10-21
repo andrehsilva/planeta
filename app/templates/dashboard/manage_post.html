@@ -34,7 +34,8 @@
                     <div class="mb-4">
                         <p class="block text-sm font-medium text-gray-700">Vídeo Atual:</p>
                         <video controls class="mt-2 rounded-lg max-w-full max-h-64 shadow-sm">
-                            <source src="{{ url_for('static', filename='uploads/' + post.video_filename) }}" type="video/mp4">
+                            <!-- CORREÇÃO APLICADA AQUI -->
+                            <source src="/media/{{ post.video_filename }}" type="video/mp4">
                             Seu navegador não suporta o elemento de vídeo.
                         </video>
                         <div class="mt-4 flex items-center">
@@ -53,7 +54,8 @@
                     {% if post and post.cover_image and post.cover_image != 'default.jpg' %}
                     <div class="mb-4">
                         <p class="block text-sm font-medium text-gray-700">Capa Atual:</p>
-                        <img src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="Imagem de capa atual" class="mt-2 rounded-lg max-h-48 shadow-sm">
+                        <!-- CORREÇÃO APLICADA AQUI -->
+                        <img src="/media/{{ post.cover_image }}" alt="Imagem de capa atual" class="mt-2 rounded-lg max-h-48 shadow-sm">
                         <div class="mt-4 flex items-center">
                             {{ form.remove_cover_image(class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500") }}
                             {{ form.remove_cover_image.label(class="ml-2 block text-sm font-medium text-gray-800") }}
@@ -74,7 +76,8 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             {% for image in post.gallery_images %}
                             <div class="relative group">
-                                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.caption or 'Imagem da galeria' }}" class="rounded-lg shadow-sm w-full h-24 object-cover">
+                                <!-- CORREÇÃO APLICADA AQUI -->
+                                <img src="/media/{{ image.filename }}" alt="{{ image.caption or 'Imagem da galeria' }}" class="rounded-lg shadow-sm w-full h-24 object-cover">
                                 <button type="button" @click="deleteUrl = '{{ url_for('dashboard.delete_image', image_id=image.id) }}'; deleteModalOpen = true" class="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -100,7 +103,8 @@
                             {% for video in post.gallery_videos %}
                             <div class="relative group border rounded-lg p-2">
                                 <video controls class="w-full rounded-lg">
-                                    <source src="{{ url_for('static', filename='uploads/' + video.filename) }}" type="video/mp4">
+                                    <!-- CORREÇÃO APLICADA AQUI -->
+                                    <source src="/media/{{ video.filename }}" type="video/mp4">
                                     Seu navegador não suporta o elemento de vídeo.
                                 </video>
                                 <button type="button" @click="deleteUrl = '{{ url_for('dashboard.delete_video', video_id=video.id) }}'; deleteModalOpen = true" class="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">

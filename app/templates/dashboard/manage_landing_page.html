@@ -35,7 +35,6 @@
                  <div>
                     {% if landing_page and landing_page.hero_image %}
                     <p class="block text-sm font-medium text-gray-700">Imagem Atual:</p>
-                    <!-- CORREÇÃO APLICADA AQUI -->
                     <img src="/media/{{ landing_page.hero_image }}" alt="Imagem hero atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
                     {% endif %}
                     {{ form.hero_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
@@ -64,7 +63,6 @@
                 <div>
                     {% if landing_page and landing_page.content_image %}
                     <p class="block text-sm font-medium text-gray-700">Imagem de Conteúdo Atual:</p>
-                    <!-- CORREÇÃO APLICADA AQUI -->
                     <img src="/media/{{ landing_page.content_image }}" alt="Imagem de conteúdo atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
                     {% endif %}
                     {{ form.content_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
@@ -121,4 +119,3 @@
     });
 </script>
 {% endblock %}
-
