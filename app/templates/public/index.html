@@ -74,7 +74,8 @@ document.addEventListener('alpine:init', () => {
         currentIndex: 0,
         images: [
             {% for image in content.structure_images %}
-            '{{ url_for('static', filename='uploads/' + image.filename) }}',
+            // CORREÇÃO APLICADA AQUI
+            '/media/{{ image.filename }}',
             {% endfor %}
         ],
         openModal(index) {
@@ -95,7 +96,6 @@ document.addEventListener('alpine:init', () => {
         get currentImageUrl() { return this.images[this.currentIndex]; }
     }));
 });
-</script>
 <style>[x-cloak] { display: none !important; }</style>
 
 {% endblock %}
