@@ -23,10 +23,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # --- CORREÇÃO PRINCIPAL ---
 # Passo 6: Copiar explicitamente os ficheiros e pastas da aplicação.
 # Isto garante que a pasta 'static' (com 'images') seja incluída.
+# Copia todo o app, incluindo a pasta static
 COPY app ./app
-COPY static ./static
 COPY config.py .
 COPY migrations ./migrations
+
 COPY pyproject.toml .
 # Adicione outras pastas ou ficheiros de topo se necessário (ex: tests, etc.)
 
