@@ -92,11 +92,14 @@ document.addEventListener('alpine:init', () => {
         currentIndex: 0,
         images: [
             {% for image in post.gallery_images %}
-            // CORREÇÃO APLICADA AQUI
-            '/media/{{ image.filename }}',
+            '/media/{{ image.filename }}'{% if not loop.last %},{% endif %}
             {% endfor %}
         ],
-        // ... restante da lógica do Alpine.js ...
+        captions: [
+            {% for image in post.gallery_images %}
+            '{{ image.caption or "" }}'{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
         openModal(index) {
             this.currentIndex = index;
             this.isOpen = true;
@@ -107,12 +110,21 @@ document.addEventListener('alpine:init', () => {
             document.body.style.overflow = 'auto';
         },
         nextImage() {
-            if (this.currentIndex < this.images.length - 1) { this.currentIndex++; }
+            if (this.currentIndex < this.images.length - 1) { 
+                this.currentIndex++; 
+            }
         },
         prevImage() {
-            if (this.currentIndex > 0) { this.currentIndex--; }
+            if (this.currentIndex > 0) { 
+                this.currentIndex--; 
+            }
         },
-        get currentImageUrl() { return this.images[this.currentIndex]; }
+        get currentImageUrl() { 
+            return this.images[this.currentIndex]; 
+        },
+        get currentCaption() {
+            return this.captions[this.currentIndex] || '';
+        }
     }));
 });
 </script>
