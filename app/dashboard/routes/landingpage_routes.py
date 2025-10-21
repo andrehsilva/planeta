@@ -18,14 +18,20 @@ from app.forms import LandingPageForm
 # --- Funções Auxiliares (Helpers) ---
 # Movida para cá para manter o módulo autossuficiente.
 
-def save_picture(form_picture_data):
-    """Gera um nome de arquivo seguro e único e salva a imagem."""
+def save_picture(form_picture, subfolder='uploads'):
     random_hex = secrets.token_hex(8)
-    picture_fn = secure_filename(form_picture_data.filename)
-    picture_name = random_hex + '_' + picture_fn
-    picture_path = os.path.join(current_app.config['UPLOAD_FOLDER'], picture_name)
-    form_picture_data.save(picture_path)
-    return picture_name
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+
+    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
+    upload_folder = current_app.config.get('UPLOAD_FOLDER', '/app/static/uploads')
+    picture_path = os.path.join(upload_folder, picture_fn)
+
+    # Garante que a pasta existe
+    os.makedirs(upload_folder, exist_ok=True)
+
+    form_picture.save(picture_path)
+    return picture_fn
 
 # --- Rotas de Gerenciamento de Landing Pages ---
 
