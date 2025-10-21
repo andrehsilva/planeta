@@ -1,11 +1,8 @@
 # app/dashboard/routes/post_routes.py
 
 # --- Imports Essenciais ---
-import os
-import secrets
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from slugify import slugify
 
@@ -14,46 +11,9 @@ from app.dashboard import bp
 from app.extensions import db
 from app.models import Post, Category, Image, Video
 from app.forms import PostForm, CategoryForm
+# --- IMPORTAÇÃO CENTRALIZADA DAS FUNÇÕES DE UPLOAD ---
+from app.utils import save_picture, save_video, delete_file_from_uploads
 
-# --- Funções Auxiliares (Helpers) ---
-# NOTA: Para uma organização mais avançada no futuro, estas funções poderiam
-# viver em um único arquivo de 'helpers' para evitar duplicação.
-# Por enquanto, mantê-las aqui torna cada módulo de rotas autossuficiente.
-
-def _delete_file(filename):
-    """Deleta um arquivo da pasta de uploads, ignorando o 'default.jpg'."""
-    if not filename or filename == 'default.jpg':
-        return
-    try:
-        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    except Exception as e:
-        print(f"Erro ao deletar o arquivo {filename}: {e}")
-
-def save_picture(form_picture, subfolder='uploads'):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-
-    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
-    upload_folder = current_app.config.get('UPLOAD_FOLDER', '/app/static/uploads')
-    picture_path = os.path.join(upload_folder, picture_fn)
-
-    # Garante que a pasta existe
-    os.makedirs(upload_folder, exist_ok=True)
-
-    form_picture.save(picture_path)
-    return picture_fn
-
-def save_video(form_video_data):
-    """Gera um nome de arquivo seguro e único e salva o vídeo."""
-    random_hex = secrets.token_hex(8)
-    video_fn = secure_filename(form_video_data.filename)
-    video_name = random_hex + '_' + video_fn
-    video_path = os.path.join(current_app.config['UPLOAD_FOLDER'], video_name)
-    form_video_data.save(video_path)
-    return video_name
 
 # --- ROTAS DE GERENCIAMENTO DE POSTS ---
 
@@ -114,14 +74,14 @@ def add_post():
         db.session.add(new_post)
         
         # Adiciona imagens da galeria
-        if form.gallery_images.data:  # <-- ADICIONE ESTA LINHA
+        if form.gallery_images.data:
             for image_file in form.gallery_images.data:
                 if isinstance(image_file, FileStorage):
                     new_image = Image(filename=save_picture(image_file), post=new_post)
                     db.session.add(new_image)
         
         # Adiciona vídeos da galeria
-        if form.gallery_videos.data:  # <-- ADICIONE ESTA LINHA
+        if form.gallery_videos.data:
             for video_file in form.gallery_videos.data:
                 if isinstance(video_file, FileStorage):
                     new_video = Video(filename=save_video(video_file), post=new_post)
@@ -142,18 +102,18 @@ def edit_post(post_id):
     if form.validate_on_submit():
         # Lógica de atualização/remoção da imagem de capa
         if isinstance(form.cover_image.data, FileStorage):
-            _delete_file(post.cover_image)
+            delete_file_from_uploads(post.cover_image)
             post.cover_image = save_picture(form.cover_image.data)
         elif form.remove_cover_image.data:
-            _delete_file(post.cover_image)
+            delete_file_from_uploads(post.cover_image)
             post.cover_image = 'default.jpg'
 
         # Lógica de atualização/remoção do vídeo principal
         if isinstance(form.main_video.data, FileStorage):
-            _delete_file(post.video_filename)
+            delete_file_from_uploads(post.video_filename)
             post.video_filename = save_video(form.main_video.data)
         elif form.remove_main_video.data:
-            _delete_file(post.video_filename)
+            delete_file_from_uploads(post.video_filename)
             post.video_filename = None
         
         # Atualiza os campos de texto e relacionamentos
@@ -164,15 +124,13 @@ def edit_post(post_id):
         post.meta_description = form.meta_description.data
         post.is_published = form.is_published.data
         
-        # CÓDIGO CORRIGIDO para edit_post
-
-        # Adiciona novas imagens/vídeos à galeria (não remove os existentes)
-        if form.gallery_images.data:  # <-- ADICIONE ESTA LINHA
+        # Adiciona novas imagens/vídeos à galeria
+        if form.gallery_images.data:
             for image_file in form.gallery_images.data:
                 if isinstance(image_file, FileStorage):
                     db.session.add(Image(filename=save_picture(image_file), post=post))
         
-        if form.gallery_videos.data:  # <-- ADICIONE ESTA LINHA
+        if form.gallery_videos.data:
             for video_file in form.gallery_videos.data:
                 if isinstance(video_file, FileStorage):
                     db.session.add(Video(filename=save_video(video_file), post=post))
@@ -190,10 +148,12 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     
     # Deleta arquivos de mídia antes de deletar o post
-    _delete_file(post.cover_image)
-    _delete_file(post.video_filename)
-    for image in post.gallery_images: _delete_file(image.filename)
-    for video in post.gallery_videos: _delete_file(video.filename)
+    delete_file_from_uploads(post.cover_image)
+    delete_file_from_uploads(post.video_filename)
+    for image in post.gallery_images:
+        delete_file_from_uploads(image.filename)
+    for video in post.gallery_videos:
+        delete_file_from_uploads(video.filename)
 
     db.session.delete(post)
     db.session.commit()
@@ -208,7 +168,7 @@ def delete_image(image_id):
     """Exclui uma imagem específica da galeria de um post."""
     image = Image.query.get_or_404(image_id)
     post_id = image.post.id
-    _delete_file(image.filename)
+    delete_file_from_uploads(image.filename)
     db.session.delete(image)
     db.session.commit()
     flash('Imagem da galeria foi excluída.', 'success')
@@ -220,7 +180,7 @@ def delete_video(video_id):
     """Exclui um vídeo específico da galeria de um post."""
     video = Video.query.get_or_404(video_id)
     post_id = video.post.id
-    _delete_file(video.filename)
+    delete_file_from_uploads(video.filename)
     db.session.delete(video)
     db.session.commit()
     flash('Vídeo da galeria foi excluído.', 'success')

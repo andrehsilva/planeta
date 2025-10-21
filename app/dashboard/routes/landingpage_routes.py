@@ -1,11 +1,8 @@
 # app/dashboard/routes/landingpage_routes.py
 
 # --- Imports Essenciais ---
-import os
-import secrets
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from slugify import slugify
 
@@ -14,24 +11,9 @@ from app.dashboard import bp
 from app.extensions import db
 from app.models import LandingPage
 from app.forms import LandingPageForm
+# --- IMPORTAÇÃO CENTRALIZADA DAS FUNÇÕES DE UPLOAD ---
+from app.utils import save_picture, delete_file_from_uploads
 
-# --- Funções Auxiliares (Helpers) ---
-# Movida para cá para manter o módulo autossuficiente.
-
-def save_picture(form_picture, subfolder='uploads'):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-
-    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
-    upload_folder = current_app.config.get('UPLOAD_FOLDER', '/app/static/uploads')
-    picture_path = os.path.join(upload_folder, picture_fn)
-
-    # Garante que a pasta existe
-    os.makedirs(upload_folder, exist_ok=True)
-
-    form_picture.save(picture_path)
-    return picture_fn
 
 # --- Rotas de Gerenciamento de Landing Pages ---
 
@@ -96,13 +78,13 @@ def edit_landing_page(lp_id):
         lp.content_title = form.content_title.data
         lp.content_body = form.content_body.data
 
-        # Atualiza as imagens apenas se um novo arquivo for enviado
+        # Atualiza as imagens, removendo a antiga se uma nova for enviada
         if isinstance(form.hero_image.data, FileStorage):
-            # (Opcional: deletar imagem antiga)
+            delete_file_from_uploads(lp.hero_image)
             lp.hero_image = save_picture(form.hero_image.data)
             
         if isinstance(form.content_image.data, FileStorage):
-            # (Opcional: deletar imagem antiga)
+            delete_file_from_uploads(lp.content_image)
             lp.content_image = save_picture(form.content_image.data)
 
         db.session.commit()
@@ -114,9 +96,13 @@ def edit_landing_page(lp_id):
 @bp.route('/landingpages/delete/<int:lp_id>', methods=['POST'])
 @login_required
 def delete_landing_page(lp_id):
-    """Rota para excluir uma Landing Page."""
+    """Rota para excluir uma Landing Page e suas imagens associadas."""
     lp = LandingPage.query.get_or_404(lp_id)
-    # (Opcional: adicionar lógica para remover as imagens associadas do servidor)
+    
+    # Remove as imagens associadas do servidor antes de deletar o registro
+    delete_file_from_uploads(lp.hero_image)
+    delete_file_from_uploads(lp.content_image)
+    
     db.session.delete(lp)
     db.session.commit()
     flash('Landing Page excluída com sucesso!', 'success')

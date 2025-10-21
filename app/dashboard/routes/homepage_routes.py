@@ -2,57 +2,21 @@
 
 # --- Imports Essenciais ---
 import os
-import secrets
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required
-from werkzeug.datastructures import FileStorage
-from werkzeug.utils import secure_filename
 
 # --- Imports do Projeto ---
 from app.dashboard import bp
 from app.extensions import db
 from app.models import HomePageContent, StructureImage, StructureVideo
-# --- IMPORTAÇÃO DOS NOVOS FORMULÁRIOS ---
 from app.forms import (
     HeroSectionForm, ServicesSectionForm, ValuesSectionForm,
     StructureSectionForm, VideosSectionForm, BlogSectionForm,
     CtaSectionForm, LocationSectionForm, SectionOrderForm
 )
+# --- IMPORTAÇÃO CENTRALIZADA DAS FUNÇÕES DE UPLOAD ---
+from app.utils import save_picture, save_video, delete_file_from_uploads
 
-# --- Funções Auxiliares (Helpers) ---
-# (Estas funções permanecem as mesmas)
-def _delete_file(filename):
-    if not filename or filename == 'default.jpg':
-        return
-    try:
-        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    except Exception as e:
-        print(f"Erro ao deletar o arquivo {filename}: {e}")
-
-def save_picture(form_picture, subfolder='uploads'):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-
-    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
-    upload_folder = current_app.config.get('UPLOAD_FOLDER', '/app/static/uploads')
-    picture_path = os.path.join(upload_folder, picture_fn)
-
-    # Garante que a pasta existe
-    os.makedirs(upload_folder, exist_ok=True)
-
-    form_picture.save(picture_path)
-    return picture_fn
-
-def save_video(form_video_data):
-    random_hex = secrets.token_hex(8)
-    video_fn = secure_filename(form_video_data.filename)
-    video_name = random_hex + '_' + video_fn
-    video_path = os.path.join(current_app.config['UPLOAD_FOLDER'], video_name)
-    form_video_data.save(video_path)
-    return video_name
 
 # --- ROTA PRINCIPAL PARA EXIBIR A PÁGINA DE GERENCIAMENTO ---
 
@@ -61,7 +25,6 @@ def save_video(form_video_data):
 def edit_homepage():
     """
     Exibe a página de gerenciamento da homepage, carregando todos os formulários.
-    Esta rota agora lida apenas com requisições GET.
     """
     content = HomePageContent.query.first_or_404()
     
@@ -84,11 +47,11 @@ def edit_homepage():
         'dashboard/manage_homepage.html',
         title="Editar Página Inicial",
         content=content,
-        forms=forms, # Envia o dicionário de forms para o template
+        forms=forms,
         ordered_sections_admin=ordered_sections_admin
     )
 
-# --- NOVAS ROTAS DE 'POST' PARA SALVAR CADA SEÇÃO INDIVIDUALMENTE ---
+# --- ROTAS DE 'POST' PARA SALVAR CADA SEÇÃO INDIVIDUALMENTE ---
 
 @bp.route('/homepage/order', methods=['POST'])
 @login_required
@@ -135,25 +98,17 @@ def update_values_section():
         flash('Seção "Por que nos escolher" atualizada com sucesso!', 'success')
     return redirect(url_for('dashboard.edit_homepage'))
 
-# app/dashboard/routes/homepage_routes.py
-
-# app/dashboard/routes/homepage_routes.py
-
 @bp.route('/homepage/structure', methods=['POST'])
 @login_required
 def update_structure_section():
     """
     Processa o formulário da seção 'Infraestrutura'.
-    Salva os dados em caso de sucesso ou recarrega a página 
-    com mensagens de erro específicas em caso de falha na validação.
     """
     content = HomePageContent.query.first_or_404()
     form = StructureSectionForm()
 
     if form.validate_on_submit():
-        # --- SUCESSO NA VALIDAÇÃO ---
-        
-        # 1. Atualiza manualmente todos os campos de texto e booleanos
+        # Atualiza campos de texto e booleanos
         content.show_structure_section = form.show_structure_section.data
         content.structure_section_tagline = form.structure_section_tagline.data
         content.structure_section_title = form.structure_section_title.data
@@ -163,49 +118,35 @@ def update_structure_section():
         content.structure_feature2_title = form.structure_feature2_title.data
         content.structure_feature2_text = form.structure_feature2_text.data
 
-        # Adicionamos uma verificação para garantir que há dados antes de iterar
+        # Processa as novas imagens da galeria
         if form.gallery_images.data:
             for image_file in form.gallery_images.data:
                 if image_file:
                     filename = save_picture(image_file)
-                    # Usa o nome do arquivo original (sem extensão) como legenda padrão
                     caption = os.path.splitext(image_file.filename)[0].replace('_', ' ').title()
                     new_image = StructureImage(filename=filename, caption=caption, homepage_content_id=content.id)
                     db.session.add(new_image)
         
-        
-
-        # 3. Salva as alterações no banco de dados
         db.session.add(content)
         db.session.commit()
         flash('Seção "Infraestrutura" atualizada com sucesso!', 'success')
-        
         return redirect(url_for('dashboard.edit_homepage'))
     
     else:
-        # --- FALHA NA VALIDAÇÃO ---
-
+        # Em caso de falha na validação, recarrega a página com os erros
         flash('Erro de validação na Seção Infraestrutura. Verifique os campos.', 'danger')
-
-        # 1. Recria o dicionário completo de formulários para poder renderizar a página novamente
-        # O 'form' da estrutura (que contém os erros) substitui a versão limpa.
         forms = {
             'order': SectionOrderForm(),
             'hero': HeroSectionForm(obj=content),
             'services': ServicesSectionForm(obj=content),
             'values': ValuesSectionForm(obj=content),
-            'structure': form,  # Usa o formulário atual, que contém as mensagens de erro
+            'structure': form,  # Usa o formulário com erros
             'videos': VideosSectionForm(obj=content),
             'blog': BlogSectionForm(obj=content),
             'cta': CtaSectionForm(obj=content),
             'location': LocationSectionForm(obj=content)
         }
-        
-        # 2. Prepara as outras variáveis necessárias para o template
         ordered_sections_admin = content.section_order.split(',') if content.section_order else []
-        
-        # 3. Renderiza o template novamente, que agora exibirá os erros específicos
-        # nos campos que falharam na validação.
         return render_template(
             'dashboard/manage_homepage.html',
             title="Editar Página Inicial",
@@ -214,34 +155,28 @@ def update_structure_section():
             ordered_sections_admin=ordered_sections_admin
         )
 
-# app/dashboard/routes/homepage_routes.py
-
 @bp.route('/homepage/videos', methods=['POST'])
 @login_required
 def update_videos_section():
     content = HomePageContent.query.first_or_404()
     form = VideosSectionForm()
     if form.validate_on_submit():
-        # --- CORREÇÃO APLICADA AQUI ---
-        # 1. Removido o 'form.populate_obj(content)'.
-        # 2. Atualizamos manualmente os campos que não são de upload.
         content.show_videos_section = form.show_videos_section.data
         content.videos_section_title = form.videos_section_title.data
         
-        # 3. A lógica de processamento dos arquivos agora funciona corretamente.
+        # Processa os arquivos de vídeo
         for i in range(1, 4):
             video_field = getattr(form, f'videos_section_video{i}')
             remove_field = getattr(form, f'remove_videos_section_video{i}')
             content_attr = f'videos_section_video{i}'
             
             if video_field.data:
-                _delete_file(getattr(content, content_attr))
+                delete_file_from_uploads(getattr(content, content_attr))
                 setattr(content, content_attr, save_video(video_field.data))
             elif remove_field.data:
-                _delete_file(getattr(content, content_attr))
+                delete_file_from_uploads(getattr(content, content_attr))
                 setattr(content, content_attr, None)
 
-        # 4. Adicionamos o objeto 'content' à sessão para salvar as alterações
         db.session.add(content)
         db.session.commit()
         flash('Seção "Nossos Vídeos" atualizada com sucesso!', 'success')
@@ -249,8 +184,6 @@ def update_videos_section():
         flash('Erro de validação na Seção Nossos Vídeos. Verifique os campos.', 'danger')
 
     return redirect(url_for('dashboard.edit_homepage'))
-
-
 
 @bp.route('/homepage/blog', methods=['POST'])
 @login_required
@@ -286,13 +219,13 @@ def update_location_section():
     return redirect(url_for('dashboard.edit_homepage'))
 
 
-# --- ROTAS DE DELEÇÃO (Permanecem as mesmas) ---
+# --- ROTAS DE DELEÇÃO ---
 
 @bp.route('/homepage/image/delete/<int:image_id>', methods=['POST'])
 @login_required
 def delete_structure_image(image_id):
     image = StructureImage.query.get_or_404(image_id)
-    _delete_file(image.filename)
+    delete_file_from_uploads(image.filename)
     db.session.delete(image)
     db.session.commit()
     flash('Imagem da galeria foi excluída.', 'success')
@@ -302,7 +235,7 @@ def delete_structure_image(image_id):
 @login_required
 def delete_structure_video(video_id):
     video = StructureVideo.query.get_or_404(video_id)
-    _delete_file(video.filename)
+    delete_file_from_uploads(video.filename)
     db.session.delete(video)
     db.session.commit()
     flash('Vídeo da galeria foi excluído.', 'success')

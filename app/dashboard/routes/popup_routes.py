@@ -1,34 +1,17 @@
 # app/dashboard/routes/popup_routes.py
 
 # --- Imports Essenciais ---
-import os
-import secrets
-from flask import render_template, flash, redirect, url_for, current_app
+from flask import render_template, flash, redirect, url_for
 from flask_login import login_required
-from werkzeug.utils import secure_filename
 
 # --- Imports do Projeto ---
 from app.dashboard import bp
 from app.extensions import db
 from app.models import Popup
 from app.forms import PopupForm
+# --- IMPORTAÇÃO CENTRALIZADA DAS FUNÇÕES DE UPLOAD ---
+from app.utils import save_picture, delete_file_from_uploads
 
-# --- Funções Auxiliares (Helpers) ---
-
-def save_picture(form_picture, subfolder='uploads'):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-
-    # Usa o caminho configurado em config.py (UPLOAD_FOLDER)
-    upload_folder = current_app.config.get('UPLOAD_FOLDER', '/app/static/uploads')
-    picture_path = os.path.join(upload_folder, picture_fn)
-
-    # Garante que a pasta existe
-    os.makedirs(upload_folder, exist_ok=True)
-
-    form_picture.save(picture_path)
-    return picture_fn
 
 # --- Rotas de Gerenciamento de Popups ---
 
@@ -81,9 +64,9 @@ def edit_popup(popup_id):
         if form.is_active.data:
             Popup.query.filter(Popup.id != popup_id).update({Popup.is_active: False})
 
-        # Se uma nova imagem foi enviada, salva e atualiza o nome do arquivo
+        # Se uma nova imagem foi enviada, deleta a antiga e salva a nova
         if form.image.data:
-            # (Opcional: deletar a imagem antiga do servidor)
+            delete_file_from_uploads(popup.image_filename)
             popup.image_filename = save_picture(form.image.data)
 
         popup.title = form.title.data
@@ -100,9 +83,12 @@ def edit_popup(popup_id):
 @bp.route('/popups/delete/<int:popup_id>', methods=['POST'])
 @login_required
 def delete_popup(popup_id):
-    """Deleta um popup."""
+    """Deleta um popup e sua imagem associada."""
     popup = Popup.query.get_or_404(popup_id)
-    # (Opcional: deletar o arquivo de imagem do servidor)
+    
+    # Deleta o arquivo de imagem do servidor antes de remover o registro do BD
+    delete_file_from_uploads(popup.image_filename)
+    
     db.session.delete(popup)
     db.session.commit()
     flash('Popup deletado com sucesso!', 'success')
