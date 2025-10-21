@@ -13,10 +13,12 @@
         
         <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="block h-48 overflow-hidden">
           {% if post.cover_image and post.cover_image != 'default.jpg' %}
-            <img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" src="{{ url_for('static', filename='uploads/' + post.cover_image) }}" alt="{{ post.title }}">
+            <!-- CORREÇÃO APLICADA AQUI -->
+            <img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" src="/media/{{ post.cover_image }}" alt="{{ post.title }}">
           {% elif post.video_filename %}
             <video class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" autoplay muted loop preload="metadata">
-                <source src="{{ url_for('static', filename='uploads/' + post.video_filename) }}#t=1" type="video/mp4">
+                <!-- CORREÇÃO APLICADA AQUI -->
+                <source src="/media/{{ post.video_filename }}#t=1" type="video/mp4">
                 Seu navegador não suporta vídeos.
             </video>
           {% else %}

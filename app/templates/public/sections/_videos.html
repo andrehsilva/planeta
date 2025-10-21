@@ -35,7 +35,8 @@
         ">
           <div class="rounded-2xl overflow-hidden shadow-lg aspect-video bg-black">
             <video controls class="w-full h-full object-cover">
-              <source src="{{ url_for('static', filename='uploads/' + video_filename) }}" type="video/mp4">
+              <!-- CORREÇÃO APLICADA AQUI -->
+              <source src="/media/{{ video_filename }}" type="video/mp4">
               Seu navegador não suporta o elemento de vídeo.
             </video>
           </div>
