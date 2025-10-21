@@ -1,5 +1,5 @@
 # app/__init__.py
-# --- VERSÃO COM A CORREÇÃO DO WHITENOISE ---
+# --- VERSÃO CORRIGIDA DO WHITENOISE COM PERMISSÕES ---
 
 import os
 from flask import Flask
@@ -49,26 +49,64 @@ def create_app(config_name=None):
         def load_user(user_id):
             return models.User.query.get(int(user_id))
 
-    # Cria a pasta de uploads se não existir
+    # --- CONFIGURAÇÃO DA PASTA DE UPLOADS COM PERMISSÕES ---
     with app.app_context():
         upload_path = app.config.get('UPLOAD_FOLDER')
-        if upload_path and not os.path.exists(upload_path):
-            try:
-                os.makedirs(upload_path)
-                print(f"Pasta de uploads criada com sucesso em: {upload_path}")
-            except Exception as e:
-                print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
+        if upload_path:
+            # Garante que a pasta existe com permissões corretas
+            if not os.path.exists(upload_path):
+                try:
+                    os.makedirs(upload_path, mode=0o755)  # Permissões 755
+                    print(f"✅ Pasta de uploads criada com sucesso em: {upload_path}")
+                except Exception as e:
+                    print(f"❌ Erro ao criar pasta de uploads em {upload_path}: {e}")
+            else:
+                # Se a pasta já existe, garante as permissões
+                try:
+                    os.chmod(upload_path, 0o755)
+                    print(f"✅ Permissões da pasta verificadas: {upload_path}")
+                except Exception as e:
+                    print(f"⚠️  Erro ao ajustar permissões de {upload_path}: {e}")
+            
+            # Verifica se a pasta é gravável
+            if not os.access(upload_path, os.W_OK):
+                print(f"❌ ATENÇÃO: Pasta {upload_path} não é gravável!")
+            else:
+                print(f"✅ Pasta {upload_path} é gravável")
 
-    # No __init__.py, substitua toda a seção WhiteNoise por:
-
-# --- CONFIGURAÇÃO WHITENOISE CORRIGIDA ---
+    # --- CONFIGURAÇÃO WHITENOISE OTIMIZADA ---
     if not app.debug:  # Só usar WhiteNoise em produção
-        # Serve a pasta /app/media/ com prefixo /media/
-        app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/media/', prefix='media/')
-        
-        # Opcional: Se quiser servir a pasta static também
-        # app.wsgi_app.add_files('/app/static/', prefix='static/')
+        try:
+            # Configuração WhiteNoise com cache reduzido para desenvolvimento
+            app.wsgi_app = WhiteNoise(
+                app.wsgi_app, 
+                root='/app/media/', 
+                prefix='media/',
+                max_age=60,  # Cache de 1 minuto (ajustável)
+                forever=False,  # Não usar cache permanente
+                autorefresh=True  # Recarregar automaticamente
+            )
+            
+            # Serve também a pasta static se necessário
+            # app.wsgi_app.add_files('/app/static/', prefix='static/')
+            
+            print("✅ WhiteNoise configurado para servir /app/media/")
+            
+            # Verifica se a pasta media existe e é acessível
+            if os.path.exists('/app/media'):
+                media_files = len([f for f in os.listdir('/app/media') 
+                                 if os.path.isfile(os.path.join('/app/media', f))])
+                print(f"📁 WhiteNoise servindo {media_files} arquivos de /app/media/")
+            else:
+                print("❌ ATENÇÃO: Pasta /app/media/ não encontrada!")
+                
+        except Exception as e:
+            print(f"❌ Erro ao configurar WhiteNoise: {e}")
+            # Fallback: usar rota Flask para servir arquivos
+            @app.route('/media/<path:filename>')
+            def serve_media_fallback(filename):
+                from flask import send_from_directory
+                return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+            print("✅ Fallback Flask configurado para servir arquivos media")
 
     return app
-#
-

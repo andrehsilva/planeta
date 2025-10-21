@@ -4,6 +4,8 @@ from flask.cli import with_appcontext
 from sqlalchemy import text  # Importe 'text' para executar SQL puro
 from app.extensions import db
 from app.models import User, HomePageContent
+import os
+from .extensions import db
 
 @click.command(name='create_admin')
 @with_appcontext
@@ -163,3 +165,30 @@ def register_commands(app):
     app.cli.add_command(db_reset_history)
     app.cli.add_command(db_drop_all) # Adiciona o novo comando de drop
     app.cli.add_command(seed_homepage) # Adiciona o novo comando
+
+    @app.cli.command('fix-media-permissions')
+    @with_appcontext
+    def fix_media_permissions():
+        """Corrige permissões da pasta media e arquivos"""
+        import stat
+        from flask import current_app
+        
+        media_path = current_app.config['UPLOAD_FOLDER']
+        
+        if os.path.exists(media_path):
+            # Corrige permissões da pasta
+            os.chmod(media_path, 0o755)
+            click.echo(f"✅ Permissões da pasta corrigidas: {media_path}")
+            
+            # Corrige permissões dos arquivos
+            for filename in os.listdir(media_path):
+                filepath = os.path.join(media_path, filename)
+                if os.path.isfile(filepath):
+                    os.chmod(filepath, 0o644)
+                    click.echo(f"✅ Permissões do arquivo corrigidas: {filename}")
+            
+            click.echo("🎉 Todas as permissões foram corrigidas!")
+        else:
+            click.echo(f"❌ Pasta não encontrada: {media_path}")
+
+
