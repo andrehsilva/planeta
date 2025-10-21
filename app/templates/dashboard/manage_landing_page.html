@@ -35,7 +35,8 @@
                  <div>
                     {% if landing_page and landing_page.hero_image %}
                     <p class="block text-sm font-medium text-gray-700">Imagem Atual:</p>
-                    <img src="{{ url_for('static', filename='uploads/' + landing_page.hero_image) }}" alt="Imagem hero atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
+                    <!-- CORREÇÃO APLICADA AQUI -->
+                    <img src="/media/{{ landing_page.hero_image }}" alt="Imagem hero atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
                     {% endif %}
                     {{ form.hero_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
                     <p class="text-xs text-gray-500 mb-2">Envie uma nova imagem para substituir a atual.</p>
@@ -63,7 +64,8 @@
                 <div>
                     {% if landing_page and landing_page.content_image %}
                     <p class="block text-sm font-medium text-gray-700">Imagem de Conteúdo Atual:</p>
-                    <img src="{{ url_for('static', filename='uploads/' + landing_page.content_image) }}" alt="Imagem de conteúdo atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
+                    <!-- CORREÇÃO APLICADA AQUI -->
+                    <img src="/media/{{ landing_page.content_image }}" alt="Imagem de conteúdo atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
                     {% endif %}
                     {{ form.content_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
                     <p class="text-xs text-gray-500 mb-2">Envie uma imagem para aparecer ao lado do texto de conteúdo.</p>
@@ -119,3 +121,4 @@
     });
 </script>
 {% endblock %}
+

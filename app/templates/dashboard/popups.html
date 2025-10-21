@@ -23,7 +23,8 @@
             <tr class="border-b border-gray-200 hover:bg-gray-50">
                 <td class="p-3 text-gray-700">{{ popup.title }}</td>
                 <td class="p-3">
-                    <img src="{{ url_for('static', filename='uploads/' + popup.image_filename) }}" alt="{{ popup.title }}" class="h-16 w-auto rounded-md object-cover">
+                    <!-- CORREÇÃO APLICADA AQUI -->
+                    <img src="/media/{{ popup.image_filename }}" alt="{{ popup.title }}" class="h-16 w-auto rounded-md object-cover">
                 </td>
                 <td class="p-3">
                     {% if popup.is_active %}
