@@ -59,8 +59,15 @@ def create_app(config_name=None):
             except Exception as e:
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
-    whitenoise_instance = WhiteNoise(app.wsgi_app, root='/app/media/', prefix='media/')
-    app.wsgi_app = whitenoise_instance
+    # No __init__.py, substitua toda a seção WhiteNoise por:
+
+# --- CONFIGURAÇÃO WHITENOISE CORRIGIDA ---
+    if not app.debug:  # Só usar WhiteNoise em produção
+        # Serve a pasta /app/media/ com prefixo /media/
+        app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/media/', prefix='media/')
+        
+        # Opcional: Se quiser servir a pasta static também
+        # app.wsgi_app.add_files('/app/static/', prefix='static/')
 
     return app
 #
