@@ -16,7 +16,7 @@
             {% if popup and popup.image_filename %}
                 <div class="mt-4">
                     <p class="block text-sm font-medium text-gray-700 mb-2">Imagem Atual:</p>
-                    src="/media/{{ post.video_filename }}"
+                    <!-- CÓDIGO CORRIGIDO ABAIXO -->
                     <img src="/media/{{ popup.image_filename }}" alt="Imagem atual do popup" class="max-w-xs rounded-md shadow-sm">
                     <p class="text-xs text-gray-500 mt-1">Enviar uma nova imagem irá substituir a atual.</p>
                 </div>
@@ -54,3 +54,4 @@
     </form>
 </div>
 {% endblock %}
+
