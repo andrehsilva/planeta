@@ -1,121 +1,123 @@
-{% extends "dashboard/dashboard_base.html" %}
+{% extends "public/public_base.html" %}
+{% set full_width_hero = True %}
 
-{% block dashboard_content %}
-<h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+{% block title %}{{ post.title }} - Planeta Imaginário{% endblock %}
+{% block meta_description %}{{ post.meta_description }}{% endblock %}
 
-<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-    <form method="POST" action="" enctype="multipart/form-data" id="lp-form">
-        {{ form.hidden_tag() }}
-        <div class="space-y-10">
-
-            <fieldset class="space-y-6">
-                <legend class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Configurações Gerais</legend>
-                <div>
-                    {{ form.title.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.title(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm") }}
-                </div>
-                <div class="flex items-center">
-                    {{ form.is_published(class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500") }}
-                    {{ form.is_published.label(class="ml-3 block text-sm text-gray-900") }}
-                </div>
-            </fieldset>
-
-            <fieldset class="space-y-6 border-t pt-8">
-                <legend class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Seção Principal (Hero)</legend>
-                <div>
-                    {{ form.hero_title.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.hero_title(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm") }}
-                </div>
-                <div>
-                    {{ form.hero_subtitle.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.hero_subtitle(hidden=true) }}
-                    <div id="quill-editor-subtitle" class="mt-1" style="height: 150px;"></div>
-                    <div id="initial-subtitle-content" class="hidden">{{ form.hero_subtitle.data|safe }}</div>
-                </div>
-                 <div>
-                    {% if landing_page and landing_page.hero_image %}
-                    <p class="block text-sm font-medium text-gray-700">Imagem Atual:</p>
-                    <img src="/media/{{ landing_page.hero_image }}" alt="Imagem hero atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
-                    {% endif %}
-                    {{ form.hero_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
-                    <p class="text-xs text-gray-500 mb-2">Envie uma nova imagem para substituir a atual.</p>
-                    {{ form.hero_image(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        {{ form.hero_cta_text.label(class="block text-sm font-medium text-gray-700") }}
-                        {{ form.hero_cta_text(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm", placeholder="Ex: Quero me inscrever!") }}
-                    </div>
-                     <div>
-                        {{ form.hero_cta_link.label(class="block text-sm font-medium text-gray-700") }}
-                        {{ form.hero_cta_link(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm", placeholder="https://...") }}
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset class="space-y-6 border-t pt-8">
-                <legend class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Seção de Conteúdo</legend>
-                <div>
-                    {{ form.content_title.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.content_title(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm") }}
-                </div>
-                
-                <div>
-                    {% if landing_page and landing_page.content_image %}
-                    <p class="block text-sm font-medium text-gray-700">Imagem de Conteúdo Atual:</p>
-                    <img src="/media/{{ landing_page.content_image }}" alt="Imagem de conteúdo atual" class="mt-2 rounded-lg max-h-40 shadow-sm">
-                    {% endif %}
-                    {{ form.content_image.label(class="block text-sm font-medium text-gray-700 mt-4") }}
-                    <p class="text-xs text-gray-500 mb-2">Envie uma imagem para aparecer ao lado do texto de conteúdo.</p>
-                    {{ form.content_image(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
-                </div>
-            
-                <div>
-                    {{ form.content_body.label(class="block text-sm font-medium text-gray-700") }}
-                    {{ form.content_body(hidden=true) }}
-                    <div id="quill-editor" class="mt-1" style="height: 300px;"></div>
-                    <div id="initial-content" class="hidden">{{ form.content_body.data|safe }}</div>
-                </div>
-            </fieldset>
-
-            <div class="flex justify-end space-x-4 pt-4 border-t">
-                <a href="{{ url_for('dashboard.list_landing_pages') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
-                    Cancelar
-                </a>
-                {{ form.submit(class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 cursor-pointer") }}
-            </div>
+{% block public_content %}
+<article class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-4xl">
+    
+    <header class="mb-8 text-center">
+        <div class="mb-4">
+            {% for cat in post.categories %}
+            <span class="inline-block bg-indigo-100 text-indigo-800 text-sm font-semibold mr-2 px-3 py-1 rounded-full">{{ cat.name }}</span>
+            {% endfor %}
         </div>
-    </form>
-</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">{{ post.title }}</h1>
+        <div class="mt-6 flex justify-center items-center space-x-4 text-sm text-gray-500">
+            <span>Por {{ post.author.username }}</span>
+            <span class="text-gray-300">|</span>
+            <time datetime="{{ post.created_at.strftime('%Y-%m-%d') }}">{{ post.created_at.strftime('%d de %b de %Y') }}</time>
+        </div>
+    </header>
+
+    {% if post.cover_image and post.cover_image != 'default.jpg' %}
+    <figure class="mb-8">
+        <!-- CORREÇÃO APLICADA AQUI -->
+        <img class="w-full h-auto rounded-2xl shadow-lg object-cover" style="max-height: 500px;" src="/media/{{ post.cover_image }}" alt="{{ post.title }}">
+    </figure>
+    {% endif %}
+
+    {% if post.video_filename %}
+    <div class="mb-8 rounded-2xl shadow-lg overflow-hidden">
+        <video controls class="w-full h-auto">
+            <!-- CORREÇÃO APLICADA AQUI -->
+            <source src="/media/{{ post.video_filename }}" type="video/mp4">
+            Seu navegador não suporta o elemento de vídeo.
+        </video>
+    </div>
+    {% endif %}
+
+    <div class="prose prose-lg max-w-none">
+        {{ post.content | safe }}
+    </div>
+
+    {% if post.gallery_images %}
+    <section x-data="galleryModal()" class="mt-12 border-t pt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Galeria de Imagens</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {% for image in post.gallery_images %}
+            <button type="button" @click="openModal({{ loop.index0 }})" class="block w-full h-48 focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50 rounded-lg overflow-hidden">
+                <!-- CORREÇÃO APLICADA AQUI -->
+                <img src="/media/{{ image.filename }}" alt="{{ image.caption or 'Imagem da galeria' }}" class="w-full h-full object-cover rounded-lg shadow-md hover:shadow-xl hover:opacity-80 transition-all duration-300">
+            </button>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if post.gallery_videos %}
+    <section x-data="{ expandedVideoIndex: null }" class="mt-12 border-t pt-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Galeria de Vídeos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for video in post.gallery_videos %}
+            <div @click.away="if (expandedVideoIndex === {{ loop.index0 }}) expandedVideoIndex = null" class="rounded-lg overflow-hidden shadow-md aspect-video transition-all duration-300 ease-in-out" :class="{ 'col-span-1 md:col-span-2': expandedVideoIndex === {{ loop.index0 }} }">
+                <div x-show="expandedVideoIndex !== {{ loop.index0 }}" class="relative h-full w-full cursor-pointer group" @click="expandedVideoIndex = {{ loop.index0 }}">
+                    <video class="w-full h-full object-cover" muted preload="metadata">
+                        <!-- CORREÇÃO APLICADA AQUI -->
+                        <source src="/media/{{ video.filename }}#t=0.5" type="video/mp4">
+                    </video>
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+                <div x-show="expandedVideoIndex === {{ loop.index0 }}" x-cloak class="h-full w-full">
+                    <video class="w-full h-full" controls autoplay @ended="expandedVideoIndex = null">
+                         <!-- CORREÇÃO APLICADA AQUI -->
+                        <source src="/media/{{ video.filename }}" type="video/mp4">
+                        Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</article>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- Editor Principal (Content Body) ---
-        const quillContent = new Quill('#quill-editor', { 
-            theme: 'snow', 
-            modules: { toolbar: [[{ 'header': [1, 2, 3, false] }],['bold', 'italic', 'underline', 'strike'],[{ 'list': 'ordered'}, { 'list': 'bullet' }],['link', 'image'],['clean']] }
-        });
-        const contentInput = document.querySelector('textarea[name="content_body"]');
-        const initialContent = document.querySelector('#initial-content').innerHTML;
-        if (initialContent) { quillContent.root.innerHTML = initialContent.trim(); }
-        quillContent.on('text-change', function() { contentInput.value = quillContent.root.innerHTML; });
-
-        // --- Editor do Subtítulo (Hero Subtitle) ---
-        const quillSubtitle = new Quill('#quill-editor-subtitle', {
-            theme: 'snow',
-            modules: { toolbar: [['bold', 'italic', 'underline'], ['link']] } // Uma barra de ferramentas mais simples
-        });
-        const subtitleInput = document.querySelector('textarea[name="hero_subtitle"]');
-        const initialSubtitleContent = document.querySelector('#initial-subtitle-content').innerHTML;
-        if (initialSubtitleContent) { quillSubtitle.root.innerHTML = initialSubtitleContent.trim(); }
-        quillSubtitle.on('text-change', function() { subtitleInput.value = quillSubtitle.root.innerHTML; });
-
-        // --- Sincronização Final do Formulário ---
-        const form = document.querySelector('#lp-form');
-        form.addEventListener('submit', function() { 
-            contentInput.value = quillContent.root.innerHTML; 
-            subtitleInput.value = quillSubtitle.root.innerHTML;
-        });
-    });
+document.addEventListener('alpine:init', () => {
+    Alpine.data('galleryModal', () => ({
+        isOpen: false,
+        currentIndex: 0,
+        images: [
+            {% for image in post.gallery_images %}
+            // CORREÇÃO APLICADA AQUI
+            '/media/{{ image.filename }}',
+            {% endfor %}
+        ],
+        openModal(index) {
+            this.currentIndex = index;
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+        },
+        closeModal() {
+            this.isOpen = false;
+            document.body.style.overflow = 'auto';
+        },
+        nextImage() {
+            if (this.currentIndex < this.images.length - 1) { this.currentIndex++; }
+        },
+        prevImage() {
+            if (this.currentIndex > 0) { this.currentIndex--; }
+        },
+        get currentImageUrl() { return this.images[this.currentIndex]; }
+    }));
+});
 </script>
+
+<style> [x-cloak] { display: none !important; } </style>
 {% endblock %}
+
