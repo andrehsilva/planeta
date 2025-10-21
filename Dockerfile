@@ -28,6 +28,9 @@ COPY app ./app
 COPY config.py .
 COPY migrations ./migrations
 
+# Cria a pasta de uploads e ajusta permissões
+RUN mkdir -p /app/static/uploads && chmod -R 777 /app/static/uploads
+
 COPY pyproject.toml .
 # Adicione outras pastas ou ficheiros de topo se necessário (ex: tests, etc.)
 
