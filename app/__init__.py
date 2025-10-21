@@ -63,7 +63,8 @@ def create_app(config_name=None):
     # CONFIGURAÇÃO FINAL DO WHITENOISE:
     # Esta regra mapeia a URL /static/... para a pasta física /app/static/...
     # Agora funcionará porque o Dockerfile copiou a pasta.
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
+    #app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
+    app.wsgi_app.add_files('/app/media/', prefix='media/')
     
     return app
 
