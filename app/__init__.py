@@ -1,5 +1,5 @@
 # app/__init__.py
-# --- VERSÃO FINAL E CORRIGIDA ---
+# --- VERSÃO COM A CORREÇÃO DO WHITENOISE ---
 
 import os
 from flask import Flask
@@ -7,7 +7,7 @@ from markupsafe import Markup
 from . import commands
 from whitenoise import WhiteNoise
 
-# Importando as extensões que serão inicializadas
+# Importando as extensões
 from .extensions import db, migrate, login_manager
 from config import config_by_name
 
@@ -15,24 +15,23 @@ def create_app(config_name=None):
     """
     Fábrica de aplicativos (Application Factory).
     """
-    # Define o app de forma simples. A estrutura de ficheiros foi corrigida no Dockerfile.
     app = Flask(__name__, instance_relative_config=True)
 
-    # --- LÓGICA DE CONFIGURAÇÃO ---
+    # --- Configuração ---
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'default')
     app.config.from_object(config_by_name[config_name])
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
-    # --- INICIALIZAÇÃO DAS EXTENSÕES ---
+    # --- Inicialização das Extensões ---
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # Registra os comandos customizados
+    # Registra os comandos
     commands.register_commands(app)
 
-    # --- REGISTRO DE BLUEPRINTS E OUTROS COMPONENTES ---
+    # --- Blueprints e Componentes ---
     with app.app_context():
         from . import models
         from .main import bp as main_bp
@@ -50,7 +49,7 @@ def create_app(config_name=None):
         def load_user(user_id):
             return models.User.query.get(int(user_id))
 
-    # Cria a pasta de uploads (dentro do volume) se ela não existir
+    # Cria a pasta de uploads se não existir
     with app.app_context():
         upload_path = app.config.get('UPLOAD_FOLDER')
         if upload_path and not os.path.exists(upload_path):
@@ -60,11 +59,13 @@ def create_app(config_name=None):
             except Exception as e:
                 print(f"Erro ao criar pasta de uploads em {upload_path}: {e}")
 
-    # CONFIGURAÇÃO FINAL DO WHITENOISE:
-    # Esta regra mapeia a URL /static/... para a pasta física /app/static/...
-    # Agora funcionará porque o Dockerfile copiou a pasta.
-    #app.wsgi_app = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
-    app.wsgi_app.add_files('/app/media/', prefix='media/')
+    # --- CORREÇÃO NA CONFIGURAÇÃO DO WHITENOISE ---
+    # Primeiro, criamos uma instância do WhiteNoise com a pasta principal ('static')
+    whitenoise_instance = WhiteNoise(app.wsgi_app, root='/app/static/', prefix='static/')
+    # Em seguida, adicionamos a segunda pasta ('media') a essa instância
+    whitenoise_instance.add_files('/app/media/', prefix='media/')
+    # Finalmente, atribuímos a instância já configurada de volta à aplicação
+    app.wsgi_app = whitenoise_instance
     
     return app
 
