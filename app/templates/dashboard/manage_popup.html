@@ -16,7 +16,8 @@
             {% if popup and popup.image_filename %}
                 <div class="mt-4">
                     <p class="block text-sm font-medium text-gray-700 mb-2">Imagem Atual:</p>
-                    <img src="{{ url_for('static', filename='uploads/' + popup.image_filename) }}" alt="Imagem atual do popup" class="max-w-xs rounded-md shadow-sm">
+                    src="/media/{{ post.video_filename }}"
+                    <img src="/media/{{ popup.image_filename }}" alt="Imagem atual do popup" class="max-w-xs rounded-md shadow-sm">
                     <p class="text-xs text-gray-500 mt-1">Enviar uma nova imagem irá substituir a atual.</p>
                 </div>
             {% endif %}
