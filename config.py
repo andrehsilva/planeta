@@ -63,7 +63,7 @@ class ProductionConfig(Config):
     DEBUG = False
     # ESTA É A MUDANÇA CRÍTICA:
     # A pasta de uploads agora é /app/media, separada da pasta /app/static.
-    UPLOAD_FOLDER = '/app/media'
+    UPLOAD_FOLDER = '/app/static/uploads'
 
 # Dicionário para facilitar a seleção
 config_by_name = {
