@@ -28,7 +28,7 @@
           {# Botão que abre o modal #}
           <button 
               type="button" 
-              @click="openVideoModal('/media/{{ video_filename }}')" 
+              @click="$dispatch('open-video-modal', { src: '/media/{{ video_filename }}' })" 
               class="relative block w-full rounded-2xl overflow-hidden shadow-lg aspect-video bg-black group focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50">
               
               {# Mostra o vídeo como thumbnail (sem controlos, mudo, loop) #}
@@ -54,42 +54,3 @@
 
   </div>
 </section>
-
-<script>
-document.addEventListener('alpine:init', () => {
-    // Função global para abrir o modal de vídeo
-    window.openVideoModal = function(videoSrc) {
-        // Dispara um evento customizado que o Alpine.js no public_base.html vai capturar
-        const event = new CustomEvent('open-video-modal', { 
-            detail: { src: videoSrc } 
-        });
-        document.dispatchEvent(event);
-    };
-
-    // Alternativa: se preferir usar Alpine.store
-    Alpine.store('videoModal', {
-        isOpen: false,
-        videoSrc: '',
-        
-        open(src) {
-            this.videoSrc = src;
-            this.isOpen = true;
-            document.body.style.overflow = 'hidden';
-        },
-        
-        close() {
-            this.isOpen = false;
-            this.videoSrc = '';
-            document.body.style.overflow = 'auto';
-        }
-    });
-});
-
-// Função alternativa direta (mais simples)
-function openVideoModal(videoSrc) {
-    const event = new CustomEvent('open-video-modal', { 
-        detail: { src: videoSrc } 
-    });
-    document.dispatchEvent(event);
-}
-</script>
