@@ -100,6 +100,37 @@
     {% block public_content %}{% endblock %}
   </main>
 
+  <!-- Modal de Vídeo Global -->
+  <div x-data="videoModal" x-cloak>
+    <div x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+         @click.away="closeModal">
+      
+      <div class="relative bg-black rounded-lg w-full max-w-4xl aspect-video">
+        <!-- Botão Fechar -->
+        <button @click="closeModal" 
+                class="absolute -top-12 right-0 text-white hover:text-gray-300 text-2xl z-10">
+          <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Vídeo -->
+        <video x-show="videoSrc" 
+               class="w-full h-full rounded-lg" 
+               controls 
+               autoplay
+               x-bind:src="videoSrc">
+          Seu navegador não suporta o elemento de vídeo.
+        </video>
+      </div>
+    </div>
+  </div>
+
   <footer class="bg-gray-800 text-white">
     <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -189,6 +220,38 @@
 
 <script>
 document.addEventListener('alpine:init', () => {
+    // Componente do Modal de Vídeo Global
+    Alpine.data('videoModal', () => ({
+        isOpen: false,
+        videoSrc: '',
+        
+        init() {
+            // Listener global para abrir modal de vídeo
+            this.$el.addEventListener('open-video-modal', (event) => {
+                this.openModal(event.detail.src);
+            });
+        },
+        
+        openModal(src) {
+            this.videoSrc = src;
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+        },
+        
+        closeModal() {
+            this.isOpen = false;
+            this.videoSrc = '';
+            document.body.style.overflow = 'auto';
+            
+            // Pausa o vídeo quando o modal fecha
+            const videoElement = this.$el.querySelector('video');
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.currentTime = 0;
+            }
+        }
+    }));
+
     // Componente do Banner de Consentimento
     Alpine.data('consentBanner', () => ({
         showBanner: false,
