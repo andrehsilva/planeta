@@ -100,7 +100,9 @@
     {% block public_content %}{% endblock %}
   </main>
 
-  <div x-data="videoModal" x-cloak>
+  <div x-data="videoModal" 
+     @open-video-modal.document.window="openModal($event.detail.src)"
+     x-cloak>
     <div x-show="isOpen" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -217,25 +219,15 @@
 <script>
 document.addEventListener('alpine:init', () => {
     // Componente do Modal de Vídeo Global
+    // Componente do Modal de Vídeo Global (Versão simplificada)
     Alpine.data('videoModal', () => ({
         isOpen: false,
         videoSrc: '',
         
-        init() {
-            // Listener global para abrir modal de vídeo
-            document.addEventListener('open-video-modal', (event) => {
-                console.log('Evento recebido:', event.detail); // Para debug
-                this.openModal(event.detail.src);
-            });
-            
-            // Também escuta no elemento raiz por segurança
-            this.$el.addEventListener('open-video-modal', (event) => {
-                this.openModal(event.detail.src);
-            });
-        },
+        // O método init() FOI REMOVIDO. Não é mais necessário.
         
         openModal(src) {
-            console.log('Abrindo modal com vídeo:', src); // Para debug
+            console.log('Evento recebido! Abrindo modal com vídeo:', src); // NOVO DEBUG
             this.videoSrc = src;
             this.isOpen = true;
             document.body.style.overflow = 'hidden';
@@ -266,7 +258,6 @@ document.addEventListener('alpine:init', () => {
             }, 300);
         }
     }));
-
 
     // Componente do Banner de Consentimento
     Alpine.data('consentBanner', () => ({
