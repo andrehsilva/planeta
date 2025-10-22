@@ -191,4 +191,82 @@ def register_commands(app):
         else:
             click.echo(f"❌ Pasta não encontrada: {media_path}")
 
+    @app.cli.command('check-config')
+    @with_appcontext
+    def check_config():
+        """Verifica a configuração atual do UPLOAD_FOLDER"""
+        from flask import current_app
 
+        upload_folder = current_app.config.get('UPLOAD_FOLDER')
+        debug_mode = current_app.config.get('DEBUG')
+        env = os.environ.get('FLASK_ENV', 'default')
+
+        click.echo(f"🔧 Configuração Atual:")
+        click.echo(f"   FLASK_ENV: {env}")
+        click.echo(f"   DEBUG: {debug_mode}")
+        click.echo(f"   UPLOAD_FOLDER: {upload_folder}")
+        click.echo(f"   Pasta existe: {os.path.exists(upload_folder) if upload_folder else 'N/A'}")
+
+        # Verifica onde está salvando
+        test_path = os.path.join(upload_folder, 'test.txt') if upload_folder else ''
+        click.echo(f"   Pasta gravável: {os.access(upload_folder, os.W_OK) if upload_folder and os.path.exists(upload_folder) else 'N/A'}")
+
+
+    @app.cli.command('migrate-to-media')
+    @with_appcontext
+    def migrate_to_media():
+        """Migra arquivos de static/uploads para /app/media"""
+        import shutil
+        from flask import current_app
+
+        source_dir = '/app/app/static/uploads'  # Caminho atual
+        target_dir = current_app.config['UPLOAD_FOLDER']  # Caminho configurado
+
+        click.echo(f"🔄 Migrando de: {source_dir}")
+        click.echo(f"            para: {target_dir}")
+
+        if os.path.exists(source_dir):
+            # Cria pasta destino se não existir
+            os.makedirs(target_dir, exist_ok=True)
+
+            # Copia arquivos
+            files_copied = 0
+            for filename in os.listdir(source_dir):
+                source_path = os.path.join(source_dir, filename)
+                target_path = os.path.join(target_dir, filename)
+
+                if os.path.isfile(source_path):
+                    shutil.copy2(source_path, target_path)
+                    files_copied += 1
+                    click.echo(f"✅ Copiado: {filename}")
+
+            click.echo(f"🎉 Migração concluída! {files_copied} arquivos movidos.")
+
+            # Verifica se os arquivos estão acessíveis
+            if os.path.exists(target_dir):
+                media_files = len([f for f in os.listdir(target_dir) if os.path.isfile(os.path.join(target_dir, f))])
+                click.echo(f"📁 Agora temos {media_files} arquivos em {target_dir}")
+        else:
+            click.echo("❌ Pasta source não encontrada.")
+
+    @app.cli.command('clean-orphaned-files')
+    @with_appcontext
+    def clean_orphaned_files():
+        """Remove arquivos orphaned da pasta static/uploads"""
+        source_dir = '/app/app/static/uploads'
+        
+        if os.path.exists(source_dir):
+            files = os.listdir(source_dir)
+            if files:
+                click.echo(f"🗑️  Encontrados {len(files)} arquivos em {source_dir}")
+                if click.confirm('Deseja remover estes arquivos?'):
+                    for filename in files:
+                        filepath = os.path.join(source_dir, filename)
+                        if os.path.isfile(filepath):
+                            os.remove(filepath)
+                            click.echo(f"❌ Removido: {filename}")
+                    click.echo("✅ Limpeza concluída!")
+            else:
+                click.echo("✅ Pasta static/uploads já está vazia")
+        else:
+            click.echo("❌ Pasta static/uploads não existe")
