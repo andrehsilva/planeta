@@ -396,11 +396,15 @@ document.addEventListener('alpine:init', () => {
     // Listener global para o evento que abre o modal de vídeo
     // Necessário porque o x-data está aqui, mas o botão está em _videos.html
     window.addEventListener('open-video-modal', event => {
-        const videoModalElement = document.querySelector('[x-data="videoModal"]');
-        if (videoModalElement && videoModalElement.__x) {
-            videoModalElement.__x.dataStack[0].openModal(event.detail.src);
+        const videoModalEl = document.querySelector('[x-data="videoModal"]');
+        if (!videoModalEl) return console.error('Elemento do modal de vídeo não encontrado.');
+        
+        // Acessa o contexto Alpine corretamente
+        const videoComponent = Alpine.$data(videoModalEl);
+        if (videoComponent && typeof videoComponent.openModal === 'function') {
+            videoComponent.openModal(event.detail.src);
         } else {
-             console.error('videoModal component not found.');
+            console.error('Componente Alpine videoModal não inicializado.');
         }
     });
 
