@@ -41,7 +41,6 @@
     </div>
 
     {% if post.gallery_images %}
-    {# A seção da galeria agora usa o Alpine.data definido no script abaixo #}
     <section x-data="galleryModal()" class="mt-12 border-t pt-8"> 
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Galeria de Imagens</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -54,25 +53,39 @@
             {% endfor %}
         </div>
         
+        <!-- HTML DO MODAL SIMPLIFICADO -->
         <div x-show="isOpen" x-cloak 
              @keydown.escape.window="closeModal()"
              class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm">
-            <div @click.away="closeModal" class="relative w-full max-w-4xl max-h-[90vh] flex flex-col">
-                <img :src="currentImageUrl" alt="Visualização da imagem" class="w-auto h-auto max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl">
-                <button @click="closeModal" class="absolute -top-12 -right-4 md:-top-4 md:-right-12 h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+            
+            {# Container principal que fecha ao clicar fora da imagem/botões #}
+            <div @click.self="closeModal()" class="absolute inset-0"></div> 
+
+            <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col items-center justify-center">
+                 {# Imagem Principal - Crucial ter o :key para forçar re-renderização #}
+                <img :key="currentIndex" :src="currentImageUrl" alt="Visualização da imagem" class="w-auto h-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl block">
+
+                {# Botão Fechar #}
+                <button @click="closeModal" class="absolute -top-12 right-0 md:-top-4 md:-right-12 h-10 w-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <button @click="prevImage" x-show="currentIndex > 0" class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+
+             {# Botão Anterior #}
+            <button @click="prevImage" x-show="images.length > 1" class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition z-10" :disabled="currentIndex === 0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button @click="nextImage" x-show="currentIndex < images.length - 1" class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition">
+
+            {# Botão Próximo #}
+            <button @click="nextImage" x-show="images.length > 1" class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/40 transition z-10" :disabled="currentIndex === images.length - 1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
         </div>
-        </section>
+        <!-- FIM DO HTML DO MODAL SIMPLIFICADO -->
+    </section>
     {% endif %}
 
+    {# Restante do código do post_detail (vídeos, etc.) #}
     {% if post.gallery_videos %}
     <section x-data="{ expandedVideoIndex: null }" class="mt-12 border-t pt-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Galeria de Vídeos</h2>
@@ -104,6 +117,7 @@
     {% endif %}
 </article>
 
+<!-- SCRIPT DA GALERIA SIMPLIFICADO E CORRIGIDO -->
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('galleryModal', () => ({
@@ -111,41 +125,84 @@ document.addEventListener('alpine:init', () => {
         currentIndex: 0,
         images: [
             {% for image in post.gallery_images %}
-            '/media/{{ image.filename }}'{% if not loop.last %},{% endif %} {# Garante que não haja vírgula extra #}
+            '/media/{{ image.filename }}'{% if not loop.last %},{% endif %}
             {% endfor %}
         ],
+        
+        // Adiciona um listener para o teclado quando o modal abre
+        init() {
+            this.$watch('isOpen', value => {
+                if (value) {
+                    window.addEventListener('keydown', this.handleKeydown);
+                } else {
+                    window.removeEventListener('keydown', this.handleKeydown);
+                }
+            });
+            // Associa a função handleKeydown ao contexto correto
+            this.handleKeydown = this.handleKeydown.bind(this); 
+        },
+
+        // Função para lidar com teclas (Escape, Setas)
+        handleKeydown(event) {
+            if (!this.isOpen) return; // Só age se o modal estiver aberto
+
+            if (event.key === 'Escape') {
+                this.closeModal();
+            } else if (event.key === 'ArrowRight') {
+                this.nextImage();
+            } else if (event.key === 'ArrowLeft') {
+                this.prevImage();
+            }
+        },
+
         openModal(index) {
-            // Garante que o índice é válido
             if (index >= 0 && index < this.images.length) {
                 this.currentIndex = index;
                 this.isOpen = true;
-                document.body.style.overflow = 'hidden'; // Previne scroll do body
+                document.body.style.overflow = 'hidden'; 
+                document.documentElement.style.overflow = 'hidden'; // Para o <html> também
+                 console.log(`Modal opened at index: ${this.currentIndex}`);
+            } else {
+                 console.error(`Invalid index for openModal: ${index}`);
             }
         },
         closeModal() {
             this.isOpen = false;
-            document.body.style.overflow = 'auto'; // Restaura scroll do body
+            document.body.style.overflow = 'auto'; 
+            document.documentElement.style.overflow = 'auto';
+             console.log('Modal closed');
         },
         nextImage() {
             if (this.currentIndex < this.images.length - 1) { 
                 this.currentIndex++; 
+                 console.log(`Next image index: ${this.currentIndex}`);
+            } else {
+                 console.log('Already at the last image.');
             }
-            // Opcional: Voltar para a primeira imagem ao chegar no fim
-            // else { this.currentIndex = 0; } 
         },
         prevImage() {
             if (this.currentIndex > 0) { 
                 this.currentIndex--; 
+                 console.log(`Previous image index: ${this.currentIndex}`);
+            } else {
+                 console.log('Already at the first image.');
             }
-            // Opcional: Ir para a última imagem ao chegar no início
-            // else { this.currentIndex = this.images.length - 1; }
         },
+        // A chave aqui é que o Alpine vai reavaliar este getter automaticamente
+        // sempre que `currentIndex` mudar.
         get currentImageUrl() { 
-            // Garante que retornará algo mesmo se o array estiver vazio
-            return this.images.length > 0 ? this.images[this.currentIndex] : ''; 
+            if (this.images.length > 0 && this.currentIndex >= 0 && this.currentIndex < this.images.length) {
+                 console.log(`Getting URL for index ${this.currentIndex}: ${this.images[this.currentIndex]}`);
+                return this.images[this.currentIndex]; 
+            }
+             console.warn('Could not get current image URL.');
+            return ''; 
         }
     }));
 });
 </script>
+<!-- FIM DO SCRIPT -->
+
 <style> [x-cloak] { display: none !important; } </style>
 {% endblock %}
+

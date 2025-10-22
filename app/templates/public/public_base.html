@@ -113,7 +113,7 @@
             <li><a href="{{ url_for('main.index') }}" class="text-gray-400 hover:text-white">Home</a></li>
             <li><a href="{{ url_for('main.blog_archive') }}" class="text-gray-400 hover:text-white">Blog</a></li>
             <li><a href="{{ url_for('main.contact') }}" class="text-gray-400 hover:text-white">Contato</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
+             <li><a href="{{ url_for('main.privacy_policy') }}" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
           </ul>
         </div>
         <div>
@@ -161,6 +161,7 @@
   </div>
 </div>
 
+{# --- INÍCIO DO CÓDIGO DO POPUP --- #}
 {% if active_popup %}
 <div x-data="popupModal" x-show="showPopup" x-cloak 
      x-transition:enter="transition ease-out duration-300" 
@@ -180,28 +181,51 @@
          class="relative bg-white rounded-lg shadow-xl max-w-3xl w-full">
         <button @click="closePopup" class="absolute -top-3 -right-3 h-10 w-10 bg-red-600 text-white rounded-full flex items-center justify-center z-10 hover:bg-red-700 text-2xl font-bold">&times;</button>
         <a href="{{ active_popup.target_url }}" target="_blank" rel="noopener">
-              <!-- CORREÇÃO DA URL DA IMAGEM DO POPUP -->
               <img src="/media/{{ active_popup.image_filename }}" alt="{{ active_popup.title }}" class="rounded-lg w-full h-auto object-contain">
           </a>
     </div>
 </div>
 {% endif %}
+{# --- FIM DO CÓDIGO DO POPUP --- #}
+
+{# ========================================== #}
+{# --- INÍCIO DO CÓDIGO DO MODAL DE VÍDEO --- #}
+{# ========================================== #}
+<div x-data="videoModal" x-show="isOpen" x-cloak
+     @keydown.escape.window="closeModal()"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm"
+     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+    
+    {# Fundo clicável para fechar #}
+    <div @click.self="closeModal()" class="absolute inset-0"></div> 
+
+    <div class="relative w-full max-w-4xl max-h-[90vh] bg-black rounded-lg shadow-xl overflow-hidden">
+        {# O vídeo agora usa object-contain para se ajustar #}
+        <video x-show="isOpen" x-ref="videoPlayer" controls autoplay class="w-full h-full object-contain block" :src="videoSrc" @ended="closeModal()">
+            Seu navegador não suporta vídeos.
+        </video>
+        <button @click="closeModal()" class="absolute top-2 right-2 h-10 w-10 bg-black/40 text-white rounded-full flex items-center justify-center hover:bg-black/60 transition z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+    </div>
+</div>
+{# ======================================== #}
+{# --- FIM DO CÓDIGO DO MODAL DE VÍDEO --- #}
+{# ======================================== #}
+
 
 <script>
 document.addEventListener('alpine:init', () => {
     // Componente do Banner de Consentimento
     Alpine.data('consentBanner', () => ({
         showBanner: false,
-        
         init() {
             const hasConsent = localStorage.getItem('planeta_privacy_consent');
             if (hasConsent !== 'accepted') {
-                setTimeout(() => {
-                    this.showBanner = true;
-                }, 1000);
+                setTimeout(() => { this.showBanner = true; }, 1000);
             }
         },
-        
         acceptConsent() {
             localStorage.setItem('planeta_privacy_consent', 'accepted');
             this.showBanner = false;
@@ -214,10 +238,8 @@ document.addEventListener('alpine:init', () => {
         displayMode: '{{ active_popup.display_mode if active_popup else "show_once" }}',
         popupId: '{{ active_popup.id if active_popup else "0" }}',
         storageKey: '',
-        
         init() {
             this.storageKey = `planeta_popup_${this.popupId}_closed`;
-            
             if (this.displayMode === 'always_show') {
                 setTimeout(() => { this.showPopup = true; }, 2500);
             } else if (this.displayMode === 'show_once') {
@@ -226,7 +248,6 @@ document.addEventListener('alpine:init', () => {
                 }
             }
         },
-        
         closePopup() {
             this.showPopup = false;
             if (this.displayMode === 'show_once') {
@@ -238,41 +259,186 @@ document.addEventListener('alpine:init', () => {
     // Componente do Botão "Voltar ao Topo"
     Alpine.data('backToTopHandler', () => ({
         visible: false,
-        
         init() {
             window.addEventListener('scroll', () => { this.visible = window.pageYOffset > 300; });
         },
-        
         scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }));
-});
+
+    // Componente do Modal da Galeria (Usado por _structure.html e post_detail.html)
+     Alpine.data('galleryModal', () => ({
+        isOpen: false,
+        currentIndex: 0,
+        images: [], // Será preenchido pelo template específico
+        
+        // Adiciona um listener para o teclado quando o modal abre
+        init() {
+            // Preenche o array de imagens a partir de um elemento escondido no template
+            const imageSourcesEl = document.getElementById('gallery-image-sources');
+            if (imageSourcesEl) {
+                try {
+                    this.images = JSON.parse(imageSourcesEl.textContent || '[]');
+                } catch (e) {
+                    console.error('Error parsing gallery images JSON:', e);
+                    this.images = [];
+                }
+            } else {
+                 // Fallback se o elemento não for encontrado
+                 console.warn('#gallery-image-sources element not found. Gallery modal might not work correctly.');
+            }
+
+            this.$watch('isOpen', value => {
+                if (value) {
+                    window.addEventListener('keydown', this.handleKeydown);
+                } else {
+                    window.removeEventListener('keydown', this.handleKeydown);
+                }
+            });
+            // Associa a função handleKeydown ao contexto correto
+            this.handleKeydown = this.handleKeydown.bind(this); 
+        },
+
+        // Função para lidar com teclas (Escape, Setas)
+        handleKeydown(event) {
+            if (!this.isOpen) return; 
+
+            if (event.key === 'Escape') {
+                this.closeModal();
+            } else if (event.key === 'ArrowRight') {
+                this.nextImage();
+            } else if (event.key === 'ArrowLeft') {
+                this.prevImage();
+            }
+        },
+
+        openModal(index) {
+            if (index >= 0 && index < this.images.length) {
+                this.currentIndex = index;
+                this.isOpen = true;
+                document.body.style.overflow = 'hidden'; 
+                document.documentElement.style.overflow = 'hidden'; 
+            }
+        },
+        closeModal() {
+            this.isOpen = false;
+            document.body.style.overflow = 'auto'; 
+            document.documentElement.style.overflow = 'auto';
+        },
+        nextImage() {
+            if (this.currentIndex < this.images.length - 1) { 
+                this.currentIndex++; 
+            }
+        },
+        prevImage() {
+            if (this.currentIndex > 0) { 
+                this.currentIndex--; 
+            }
+        },
+        get currentImageUrl() { 
+            return this.images.length > 0 ? this.images[this.currentIndex] : ''; 
+        }
+    }));
+
+    // ========================================== //
+    // --- INÍCIO DO SCRIPT DO MODAL DE VÍDEO --- //
+    // ========================================== //
+    Alpine.data('videoModal', () => ({
+        isOpen: false,
+        videoSrc: '',
+        
+        init() {
+            this.$watch('isOpen', value => {
+                const player = this.$refs.videoPlayer;
+                if (player) {
+                    if (!value) {
+                        player.pause(); // Pausa ao fechar
+                    } else {
+                         // Tenta dar play quando abre (após pequeno delay)
+                         // O autoplay no <video> pode já ter iniciado
+                         setTimeout(() => player.play().catch(e => console.log("Autoplay possibly prevented")), 100); 
+                    }
+                }
+            });
+            this.handleKeydown = this.handleKeydown.bind(this); 
+            this.$watch('isOpen', value => {
+                if (value) window.addEventListener('keydown', this.handleKeydown);
+                else window.removeEventListener('keydown', this.handleKeydown);
+            });
+        },
+
+        handleKeydown(event) {
+            if (event.key === 'Escape') {
+                this.closeModal();
+            }
+        },
+
+        openModal(src) {
+            if (src) {
+                this.videoSrc = src;
+                this.isOpen = true;
+                document.body.style.overflow = 'hidden'; 
+                document.documentElement.style.overflow = 'hidden';
+            }
+        },
+        closeModal() {
+            this.isOpen = false;
+            document.body.style.overflow = 'auto'; 
+            document.documentElement.style.overflow = 'auto';
+            this.videoSrc = ''; // Limpa src ao fechar
+        }
+    }));
+    // ======================================== //
+    // --- FIM DO SCRIPT DO MODAL DE VÍDEO --- //
+    // ======================================== //
+
+    // Listener global para o evento que abre o modal de vídeo
+    // Necessário porque o x-data está aqui, mas o botão está em _videos.html
+    window.addEventListener('open-video-modal', event => {
+        const videoModalElement = document.querySelector('[x-data="videoModal"]');
+        if (videoModalElement && videoModalElement.__x) {
+            videoModalElement.__x.dataStack[0].openModal(event.detail.src);
+        } else {
+             console.error('videoModal component not found.');
+        }
+    });
+
+}); // Fim do document.addEventListener('alpine:init', ...)
 
 // Lógica de Rolagem Suave para links internos
 document.addEventListener('DOMContentLoaded', () => {
     const headerHeight = 96; 
     
     const smoothScrollTo = (hash) => {
-        const targetElement = document.querySelector(hash);
-        if (targetElement) {
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        try { // Adiciona try-catch para seletores inválidos
+            const targetElement = document.querySelector(hash);
+            if (targetElement) {
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            }
+        } catch (e) {
+            console.error("Error finding element for smooth scroll:", e);
         }
     };
     
     document.querySelectorAll('a[href*="#"]:not([href="#"])').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            if (this.pathname === window.location.pathname) {
+            // Verifica se o link é para a mesma página
+            if (this.pathname === window.location.pathname && this.hash) {
                 e.preventDefault();
                 smoothScrollTo(this.hash);
+                // Opcional: Atualiza a URL sem saltar
+                // history.pushState(null, null, this.hash);
             }
         });
     });
     
+    // Rola para a âncora se houver uma na URL ao carregar
     if (window.location.hash) {
-        setTimeout(() => smoothScrollTo(window.location.hash), 100);
+        // Usa setTimeout para garantir que a página esteja renderizada
+        setTimeout(() => smoothScrollTo(window.location.hash), 100); 
     }
 });
 </script>
@@ -313,3 +479,4 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 </script>
 {% endblock %}
+

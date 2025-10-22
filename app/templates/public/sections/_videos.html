@@ -14,32 +14,40 @@
     </div>
     {% endif %}
 
-    {# O container principal muda de classe com base no número de vídeos #}
     {% if video_count > 0 %}
     <div class="
-        {% if video_count == 1 %}
-            flex justify-center
-        {% elif video_count == 2 %}
-            grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto
-        {% else %}
-            grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto
-        {% endif %}
+        {% if video_count == 1 %} flex justify-center 
+        {% elif video_count == 2 %} grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto
+        {% else %} grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto {% endif %}
     ">
       
-      {# Um único loop renderiza todos os vídeos disponíveis #}
+      {# Loop para renderizar os gatilhos dos vídeos #}
       {% for video_filename in videos %}
-        <div class="
-            {% if video_count == 1 %}
-              w-full max-w-3xl {# Se for apenas um vídeo, ele fica maior #}
-            {% endif %}
-        ">
-          <div class="rounded-2xl overflow-hidden shadow-lg aspect-video bg-black">
-            <video controls class="w-full h-full object-cover">
-              <!-- CORREÇÃO APLICADA AQUI -->
-              <source src="/media/{{ video_filename }}" type="video/mp4">
-              Seu navegador não suporta o elemento de vídeo.
-            </video>
-          </div>
+        <div class=" {% if video_count == 1 %} w-full max-w-3xl {% endif %} ">
+          
+          {# --- ALTERAÇÕES APLICADAS AQUI --- #}
+          {# Agora é um botão que abre o modal despachando um evento #}
+          <button 
+              type="button" 
+              @click="$dispatch('open-video-modal', { src: '/media/{{ video_filename }}' })" 
+              class="relative block w-full rounded-2xl overflow-hidden shadow-lg aspect-video bg-black group focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50">
+              
+              {# Mostra o vídeo como thumbnail (sem controlos, mudo, loop) #}
+              <video class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" muted loop preload="metadata" playsinline> {# Adicionado playsinline para iOS #}
+                  <source src="/media/{{ video_filename }}#t=1" type="video/mp4"> {# Pega o primeiro segundo como frame #}
+              </video>
+              
+              {# Sobreposição com ícone de Play #}
+              <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                  <div class="bg-white bg-opacity-90 rounded-full p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <svg class="w-8 h-8 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                      </svg>
+                  </div>
+              </div>
+          </button>
+          {# --- FIM DAS ALTERAÇÕES --- #}
+          
         </div>
       {% endfor %}
 
@@ -48,4 +56,31 @@
 
   </div>
 </section>
+
+{# =================================================================== #}
+{#      SCRIPT DO LISTENER (Necessário aqui)                           #}
+{# =================================================================== #}
+{# Este script garante que o evento 'open-video-modal' disparado      #}
+{# pelos botões acima seja corretamente "ouvido" e encaminhado para   #}
+{# o componente Alpine 'videoModal' que vive no public_base.html.     #}
+{# É crucial que este script esteja presente neste arquivo ou em       #}
+{# qualquer outro que use os botões @click="$dispatch(...)"           #}
+{# =================================================================== #}
+<script>
+    document.addEventListener('alpine:init', () => {
+        // Este listener é específico para esta página/componente
+        // Ele apenas garante que o evento seja propagado corretamente
+        // A lógica real de abrir o modal está no public_base.html
+        // A verificação se Alpine já inicializou ajuda a evitar erros
+        if (typeof Alpine !== 'undefined' && Alpine.store) { 
+             // O listener global já está no public_base.html, 
+             // não precisamos duplicá-lo aqui se o script base já o inclui.
+             // Certifique-se de que o script no public_base.html está a funcionar.
+        } else {
+            // Se Alpine ainda não estiver pronto, espera um pouco
+            // Ou certifica-te que o script principal do Alpine é carregado antes deste
+             console.warn("Alpine não inicializado ao tentar configurar listener para open-video-modal em _videos.html");
+        }
+    });
+</script>
 
