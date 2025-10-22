@@ -1,0 +1,56 @@
+{# Início da Lógica de Vídeos #}
+{% set videos = [] %}
+{% if content.videos_section_video1 %}{% set _ = videos.append(content.videos_section_video1) %}{% endif %}
+{% if content.videos_section_video2 %}{% set _ = videos.append(content.videos_section_video2) %}{% endif %}
+{% if content.videos_section_video3 %}{% set _ = videos.append(content.videos_section_video3) %}{% endif %}
+{% set video_count = videos|length %}
+
+<section class="py-20 bg-slate-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {% if content.videos_section_title %}
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900">{{ content.videos_section_title }}</h2>
+    </div>
+    {% endif %}
+
+    {% if video_count > 0 %}
+    <div class="
+        {% if video_count == 1 %} flex justify-center 
+        {% elif video_count == 2 %} grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto
+        {% else %} grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto {% endif %}
+    ">
+      
+      {# Loop para renderizar os gatilhos dos vídeos #}
+      {% for video_filename in videos %}
+        <div class=" {% if video_count == 1 %} w-full max-w-3xl {% endif %} ">
+          
+          {# Botão que abre o modal #}
+          <button 
+              type="button" 
+              @click="$dispatch('open-video-modal', { src: '/media/{{ video_filename }}' })" 
+              class="relative block w-full rounded-2xl overflow-hidden shadow-lg aspect-video bg-black group focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50">
+              
+              {# Mostra o vídeo como thumbnail (sem controlos, mudo, loop) #}
+              <video class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" muted loop preload="metadata" playsinline>
+                  <source src="/media/{{ video_filename }}#t=1" type="video/mp4">
+              </video>
+              
+              {# Sobreposição com ícone de Play #}
+              <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                  <div class="bg-white bg-opacity-90 rounded-full p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <svg class="w-8 h-8 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                      </svg>
+                  </div>
+              </div>
+          </button>
+          
+        </div>
+      {% endfor %}
+
+    </div>
+    {% endif %}
+
+  </div>
+</section>

@@ -5,7 +5,37 @@
 {% if content.videos_section_video3 %}{% set _ = videos.append(content.videos_section_video3) %}{% endif %}
 {% set video_count = videos|length %}
 
-<section class="py-20 bg-slate-50">
+{# 
+  PASSO 1: A <section> se torna um componente Alpine.js
+  Definimos o 'x-data' aqui com todo o estado e funções que precisamos.
+#}
+<section class="py-20 bg-slate-50" 
+         x-data="{
+             isModalOpen: false,
+             videoSrc: '',
+             
+             openModal(src) {
+                 this.videoSrc = src;
+                 this.isModalOpen = true;
+                 document.body.style.overflow = 'hidden';
+             },
+             
+             closeModal() {
+                 this.isModalOpen = false;
+                 document.body.style.overflow = 'auto';
+                 
+                 // Encontra o player de vídeo dentro deste componente e o pausa
+                 const videoElement = this.$el.querySelector('video[x-ref=\'videoPlayer\']');
+                 if (videoElement) {
+                     videoElement.pause();
+                     videoElement.currentTime = 0;
+                 }
+                 
+                 // Limpa o src após a animação de saída (300ms)
+                 setTimeout(() => { this.videoSrc = ''; }, 300);
+             }
+         }">
+         
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     
     {% if content.videos_section_title %}
@@ -25,13 +55,16 @@
       {% for video_filename in videos %}
         <div class=" {% if video_count == 1 %} w-full max-w-3xl {% endif %} ">
           
-          {# Botão que abre o modal #}
+          {# 
+            PASSO 2: O @click agora chama a função 'openModal' local.
+            Não usamos mais $dispatch.
+          #}
           <button 
               type="button" 
-              @click="$dispatch('open-video-modal', { src: '/media/{{ video_filename }}' })" 
+              @click="openModal('/media/{{ video_filename }}')" 
               class="relative block w-full rounded-2xl overflow-hidden shadow-lg aspect-video bg-black group focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:ring-opacity-50">
               
-              {# Mostra o vídeo como thumbnail (sem controlos, mudo, loop) #}
+              {# Thumbnail do vídeo #}
               <video class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" muted loop preload="metadata" playsinline>
                   <source src="/media/{{ video_filename }}#t=1" type="video/mp4">
               </video>
@@ -53,4 +86,38 @@
     {% endif %}
 
   </div>
+
+  {# 
+    PASSO 3: O HTML do Modal agora vive AQUI, dentro do componente.
+    Ele usará 'isModalOpen' e 'videoSrc' do 'x-data' desta seção.
+  #}
+  <div x-cloak>
+    <div x-show="isModalOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+         @click.away="closeModal">
+
+      <div class="relative bg-black rounded-lg w-full max-w-4xl aspect-video" @click.stop>
+        <button @click="closeModal" 
+                class="absolute -top-12 -right-2 text-white hover:text-gray-300 text-3xl z-10 bg-red-600 w-10 h-10 rounded-full flex items-center justify-center">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <video x-show="isModalOpen" 
+               class="w-full h-full rounded-lg" 
+               controls 
+               autoplay
+               x-ref="videoPlayer"
+               x-bind:src="videoSrc">
+          Seu navegador não suporta o elemento de vídeo.
+        </video>
+      </div>
+    </div>
+  </div>
+  
 </section>
